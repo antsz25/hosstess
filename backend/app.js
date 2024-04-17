@@ -1,8 +1,8 @@
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
-require('dotenv').config();
 const server = require('http').createServer(app);
 
 //Initial configuration
@@ -12,7 +12,7 @@ app.use(cors(corsoptions));
 app.set("trust proxy", 1);
 
 //Routes
-app.use('/clientes', require('./routers/clientes.router'));
+app.use('/clientes', require('./routers/usuarios.router'));
 app.use('/mesas', require('./routers/mesas.router'));
 
 server.listen(process.env.PORT, () => {
