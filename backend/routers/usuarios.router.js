@@ -4,12 +4,25 @@ const upload = multer();
 const userController = require('../controllers/user.controller');
 
 //REST
-router.get('/',upload.none(), userController.getCollection);
-
-router.post('/',upload.none());
-
+//GET
+router.get('/find',userController.FindUserByEmail);
+//POST
+router.post('/register',userController.CreateUser);
+router.post('/login',userController.LoginUsuario, (req,res)=>{
+    const role = req.role;
+    switch(role){ // Logica para el renderizado del usuario
+        case "client":
+            return res.status(200).send("cliente");
+        case "waiter":
+            return res.status(200).send("mesero");
+        case "admin":
+            return res.status(200).send("admin");
+    }
+});
+/*
+//PUT
 router.put('/',upload.none());
-
+//DELETE
 router.delete('/',upload.none());
-
+*/
 module.exports = router;
