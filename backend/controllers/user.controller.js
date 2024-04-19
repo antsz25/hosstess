@@ -45,7 +45,7 @@ const LoginUsuario = async(req,res,next) =>{
                     userId:search._id,
                     userRole:search.role
                 });
-                res.cookie('token',token, {httpOnly: true, maxAge: 360000});
+                res.cookie('token',token, {httpOnly: true, maxAge: 24*60*60*1000});
                 req.role = search.role;
                 next();
                 return
