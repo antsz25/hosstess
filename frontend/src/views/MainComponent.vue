@@ -10,13 +10,29 @@
 import Navbar from '../components/Sidebar.vue';
 import Mesas from '../components/Mesas.vue';
 import DetallesMesa from '../components/DetallesMesa.vue';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import Axios from '../main.ts';
+
 
 const mesas = ref([
-  { id: 1, nombre: 'Mesa 1', capacidad: 4, estado: 'Libre', mesero: 'Juan' },
-  { id: 2, nombre: 'Mesa 2', capacidad: 6, estado: 'Ocupada', mesero: 'María' },
-  // Agrega más mesas según sea necesario
+  // Agrga más mesas según sea necesario
 ]);
+
+
+onMounted(async () => {
+  mesas.value = await RefillMesas();
+});
+
+async function RefillMesas() {
+  try {
+    const response = await Axios.get('/mesas/all');
+    console.log(response.data);
+    return response.data || []; // Return data or an empty array if no data is received
+  } catch (error) {
+    console.error('Error fetching mesas:', error);
+    return []; // Return an empty array on error
+  }
+}
 
 const mesaSeleccionada = ref(null);
 

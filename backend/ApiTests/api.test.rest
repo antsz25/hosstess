@@ -18,3 +18,5 @@ content-type:application/json
   "cellphone":"6645861400"
 }
 ###
+//GET MESAS
+GET http://localhost:3001/mesas/all HTTP/1.1

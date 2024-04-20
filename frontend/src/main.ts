@@ -4,9 +4,22 @@ import App from "./App.vue";
 import { createVuetify } from "vuetify";
 import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";
+import axios, {AxiosInstance} from 'axios';
 import "./index.css";
 
+//Axios configuration
+let baseUrl: string = "http://localhost:3001";
+const token: string | null = localStorage.getItem("token");
+const Axios: AxiosInstance = axios.create({
+  baseURL: baseUrl,
+  headers: {
+    "Content-Type": "multipart/form-data",
+    "Access-Control-Allow-Origin": "*",
+  },
+  withCredentials: true,
+});
 
+export default Axios;
 
 // Importa tus componentes de Vue Router aquí
 // Por ejemplo:

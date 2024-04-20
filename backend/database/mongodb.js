@@ -6,6 +6,7 @@ const _dbName = process.env.DATABASE_NAME;
 const connection = new MongoClient(_url);
 const dbConnection = connection.db(_dbName, {useUnifiedTopology: true});
 
+//Logica de usuario
 async function CreateUser(data){
   const result = await dbConnection.collection("users").insertOne(data);
   return result;
@@ -20,8 +21,39 @@ async function LoginUsuario(email){
   .findOne({email});
   return find;
 }
+//Logica de Mesas
+async function AddMesa(data){
+  const result = await dbConnection.collection("mesas").insertOne(data);
+  return result;
+}
+async function UpdateStatusMesa(data){
+  const result = await dbConnection.collection("mesas").updateOne({numero: data.numero}, {$set: {disponible: data.disponible, personaTitular: data.personaTitular | null}});
+  return result;
+}
+async function GetMesas(){
+  const result = await dbConnection.collection("mesas").find().toArray();
+  return result;
+}
+async function GetMesaById(id){
+  const result = await dbConnection.collection("mesas").findOne({numero: id});
+  return result;
+}
+async function DeleteMesa(id){
+  const result = await dbConnection.collection("mesas").deleteOne({numero: id});
+  return result;
+}
+async function CloseMesas(){
+  const result = await dbConnection.collection("mesas").updateMany({}, {$set: {disponible: false, personaTitular: null}});
+  return result;
+}
 module.exports = {
     CreateUser,
     FindUserByEmail,
-    LoginUsuario
+    LoginUsuario,
+    AddMesa,
+    UpdateStatusMesa,
+    GetMesas,
+    GetMesaById,
+    DeleteMesa,
+    CloseMesas
 };

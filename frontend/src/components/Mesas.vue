@@ -15,9 +15,13 @@
             <div @click="gestionarMesa(mesa)" class="cursor-pointer p-6 rounded-lg shadow-md border border-gray-300 bg-white">
               <h3 class="font-semibold text-lg text-red-500">{{ mesa.nombre }}</h3>
               <p class="mt-2 text-base text-gray-700">Capacidad: {{ mesa.capacidad }}</p>
-              <p class="mt-1 text-base text-gray-700">Estado: <span class="bg-green-500 px-2 py-1 text-white rounded-full">{{ mesa.estado }}</span></p>
+              <p class="mt-1 text-base text-gray-700">Estado: 
+                <span v-if="mesa.disponible" class="bg-green-500 px-2 py-1 text-white rounded-full">Libre</span>
+                <span v-else class="bg-red-500 px-2 py-1 text-white rounded-full">Ocupada</span>
+              </p>
               <p class="mt-1 text-base text-gray-700">Mesero: {{ mesa.mesero ? mesa.mesero : 'Sin asignar' }}</p>
-              <p v-if="mesa.estado === 'Ocupada'" class="mt-1 text-base text-gray-700">{{ formatTime(mesa.tiempoOcupada) }}</p>
+              <p class="mt-1 text-base text-gray-700">Titular: {{ mesa.personaTitular ? mesa.personaTitular : 'Sin asignar' }}</p>
+              <p v-if="mesa.disponible === false" class="mt-1 text-base text-gray-700">{{ formatTime(mesa.tiempoOcupada) }}</p>
             </div>
             <button @click="eliminarMesa(mesa)" class="absolute top-2 right-2 text-red-500 hover:text-red-700 focus:outline-none">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
@@ -63,6 +67,7 @@
   </template>
   
   <script>
+  import Axios from '../main.ts';
   export default {
     name: 'Mesas',
     props: {
@@ -83,18 +88,19 @@
     },
     methods: {
       agregarMesa() {
-        this.nombreNuevaMesa = `Mesa ${this.mesas.length + 1}`;
+        this.nombreNuevaMesa = `Mesa ${this.mesas.length + 1 | 1}`;
         this.modalAgregarMesa = true;
       },
-      agregarNuevaMesa() {
+      async agregarNuevaMesa() {
         const nuevaMesa = {
-          id: Math.random().toString(36).substr(2, 9),
+          numero: this.mesas.length ? this.mesas.length + 1 : 1,
           nombre: this.nombreNuevaMesa,
           capacidad: parseInt(this.capacidadNuevaMesa),
-          estado: 'Libre',
+          disponible: true,
           mesero: null,
-          tiempoOcupada: 0
+          personaTitular: null,
         };
+        const response =  await Axios.post('/mesas/add', nuevaMesa);
         this.mesas.push(nuevaMesa);
         this.cerrarModalAgregarMesa();
       },
@@ -104,16 +110,18 @@
       },
       ocuparMesa() {
         if (this.mesaSeleccionada) {
-          this.mesaSeleccionada.estado = 'Ocupada';
+          this.mesaSeleccionada.disponible = false;
           this.mesaSeleccionada.tiempoOcupada = 0;
+          this.mesaSeleccionada.personaTitular = this.mesas.personaTitular;
           this.modalActivo = false;
           this.startTimer();
         }
       },
       desocuparMesa() {
         if (this.mesaSeleccionada) {
-          this.mesaSeleccionada.estado = 'Libre';
+          this.mesaSeleccionada.disponible = true;
           this.mesaSeleccionada.mesero = null;
+          this.mesaSeleccionada.personaTitular = null;
           this.modalActivo = false;
           clearInterval(this.timer);
         }
