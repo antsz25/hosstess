@@ -26,11 +26,11 @@ async function AddMesa(data){
   const result = await dbConnection.collection("mesas").insertOne(data);
   return result;
 }
-async function UpdateStatusMesa(data){
-  const result = await dbConnection.collection("mesas").updateOne({numero: data.numero}, {$set: {disponible: data.disponible, personaTitular: data.personaTitular | null}});
+async function UpdateStatusMesa(id,data){
+  const result = await dbConnection.collection("mesas").updateOne({numero: parseInt(id)}, {$set: {disponible: data.disponible, mesero: data.mesero, personaTitular: data.personaTitular}});
   return result;
 }
-async function GetMesas(){
+async function Getmesas(){
   const result = await dbConnection.collection("mesas").find().toArray();
   return result;
 }
@@ -52,7 +52,7 @@ module.exports = {
     LoginUsuario,
     AddMesa,
     UpdateStatusMesa,
-    GetMesas,
+    Getmesas,
     GetMesaById,
     DeleteMesa,
     CloseMesas

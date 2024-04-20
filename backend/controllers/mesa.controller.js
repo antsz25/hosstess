@@ -26,19 +26,12 @@ const GetMesaById = async(req,res)=>{
         return res.status(500).send(err);
     }
 }
-const GetMesas = async(res)=>{
-    try{
-        const result = await service.GetMesas();
-        console.log(result);
-        console.log("Blob");
-        return res.status(200).send(result);
-    }catch(err){
-        return res.status(500).send(err);
-    }
-}
 const UpdateStatusMesa = async(req,res)=>{
     try{
-        const result = await service.UpdateStatusMesa(req.body);
+        const result = await service.UpdateStatusMesa(req.params.id,req.body);
+        if(result.modifiedCount === 0){
+            return res.status(400).send("Mesa no existe");
+        }
         return res.status(200).send(result);
     }catch(err){
         return res.status(500).send(err);
@@ -60,10 +53,18 @@ const CloseMesas = async(res)=>{
         return res.status(500).send(err);
     }
 }
+const Getmesas = async(req,res)=>{
+    try{
+        const result = await service.Getmesas();
+        return res.status(200).send(result);
+    }catch(err){
+        return res.status(500).send(err.message);
+    }
+}
 module.exports = {
     AddMesa,
     GetMesaById,
-    GetMesas,
+    Getmesas,
     UpdateStatusMesa,
     DeleteMesa,
     CloseMesas

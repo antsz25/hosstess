@@ -3,11 +3,11 @@ const db = require('../database/mongodb');
 async function AddMesa(data){
     return await db.AddMesa(data);
 }
-async function UpdateStatusMesa(data){
-    return await db.UpdateStatusMesa(data);
+async function UpdateStatusMesa(id,data){
+    return await db.UpdateStatusMesa(id,data);
 }
-async function GetMesas(){
-    return await db.GetMesas();
+async function Getmesas(){
+    return await db.Getmesas();
 }
 async function GetMesaById(id){
     return await db.GetMesaById(id);
@@ -21,7 +21,7 @@ async function CloseMesas(){
 module.exports = {
     AddMesa,
     UpdateStatusMesa,
-    GetMesas,
+    Getmesas,
     GetMesaById,
     DeleteMesa,
     CloseMesas

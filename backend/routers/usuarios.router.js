@@ -5,10 +5,10 @@ const userController = require('../controllers/user.controller');
 
 //REST
 //GET
-router.get('/find',userController.FindUserByEmail);
+router.get('/find',upload.none(),userController.FindUserByEmail);
 //POST
-router.post('/register',userController.CreateUser);
-router.post('/login',userController.LoginUsuario, (req,res)=>{
+router.post('/register',upload.none(),userController.CreateUser);
+router.post('/login',upload.none(),userController.LoginUsuario, (req,res)=>{
     const role = req.role;
     switch(role){ // Logica para el renderizado del usuario
         case "client":
