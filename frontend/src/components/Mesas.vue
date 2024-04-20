@@ -1,0 +1,155 @@
+<template>
+    <div class="w-full p-4 relative">
+      <div class="absolute inset-0 bg-black opacity-25" @click="cerrarModal"></div>
+      <h2 class="text-2xl font-semibold mb-4 z-10 relative text-red-500">Gestor de Mesas y Meseros</h2>
+      <!-- Botón para agregar mesa -->
+      <button @click="agregarMesa" class="absolute top-4 right-4 z-10 p-2 rounded-full bg-gray-200 hover:bg-gray-300 focus:outline-none">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 2a1 1 0 0 1 1 1v6h6a1 1 0 1 1 0 2h-6v6a1 1 0 1 1-2 0v-6H4a1 1 0 1 1 0-2h6V3a1 1 0 0 1 1-1z" clip-rule="evenodd" />
+        </svg>
+      </button>
+      <!-- Visualización de mesas -->
+      <div class="grid grid-cols-2 gap-4 z-10 relative">
+        <div v-for="mesa in mesas" :key="mesa.id">
+          <div class="relative">
+            <div @click="gestionarMesa(mesa)" class="cursor-pointer p-6 rounded-lg shadow-md border border-gray-300 bg-white">
+              <h3 class="font-semibold text-lg text-red-500">{{ mesa.nombre }}</h3>
+              <p class="mt-2 text-base text-gray-700">Capacidad: {{ mesa.capacidad }}</p>
+              <p class="mt-1 text-base text-gray-700">Estado: <span class="bg-green-500 px-2 py-1 text-white rounded-full">{{ mesa.estado }}</span></p>
+              <p class="mt-1 text-base text-gray-700">Mesero: {{ mesa.mesero ? mesa.mesero : 'Sin asignar' }}</p>
+              <p v-if="mesa.estado === 'Ocupada'" class="mt-1 text-base text-gray-700">{{ formatTime(mesa.tiempoOcupada) }}</p>
+            </div>
+            <button @click="eliminarMesa(mesa)" class="absolute top-2 right-2 text-red-500 hover:text-red-700 focus:outline-none">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M3 5a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5zm2-2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5z" clip-rule="evenodd" />
+                <path fill-rule="evenodd" d="M6 8a1 1 0 0 1 2 0v6a1 1 0 1 1-2 0V8zm4 0a1 1 0 0 1 2 0v6a1 1 0 1 1-2 0V8z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Modal para ocupar/desocupar mesa -->
+      <div v-if="modalActivo" class="fixed inset-0 z-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg p-8" @click.stop>
+          <h3 class="text-lg font-semibold mb-4">Gestión de Mesa</h3>
+          <p class="text-gray-700 mb-4">¿Qué acción deseas realizar con la mesa?</p>
+          <div class="flex justify-between">
+            <button @click="ocuparMesa" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">Ocupar</button>
+            <button @click="desocuparMesa" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Desocupar</button>
+            <button @click="cerrarModal" class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">Cancelar</button>
+          </div>
+        </div>
+      </div>
+      <!-- Modal para agregar mesa -->
+      <div v-if="modalAgregarMesa" class="fixed inset-0 z-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg p-8" @click.stop>
+          <h3 class="text-lg font-semibold mb-4">Agregar Mesa</h3>
+          <p class="text-gray-700 mb-4">Por favor, ingrese el nombre y la capacidad de la mesa:</p>
+          <input v-model="nombreNuevaMesa" type="text" class="w-full mb-2 px-3 py-2 border rounded-md" placeholder="Nombre de la mesa">
+          <select v-model="capacidadNuevaMesa" class="w-full mb-2 px-3 py-2 border rounded-md">
+            <option value="2">2 personas</option>
+            <option value="4">4 personas</option>
+            <option value="6">6 personas</option>
+            <option value="8">8 personas</option>
+            <option value="10">10 personas</option>
+          </select>
+          <div class="flex justify-between">
+            <button @click="agregarNuevaMesa" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Agregar</button>
+            <button @click="cerrarModalAgregarMesa" class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+  
+  <script>
+  export default {
+    name: 'Mesas',
+    props: {
+      mesas: {
+        type: Array,
+        required: true
+      }
+    },
+    data() {
+      return {
+        mesaSeleccionada: null,
+        modalActivo: false,
+        modalAgregarMesa: false,
+        nombreNuevaMesa: '',
+        capacidadNuevaMesa: '4', // Por defecto, capacidad de 4 personas
+        claveEliminar: ''
+      };
+    },
+    methods: {
+      agregarMesa() {
+        this.nombreNuevaMesa = `Mesa ${this.mesas.length + 1}`;
+        this.modalAgregarMesa = true;
+      },
+      agregarNuevaMesa() {
+        const nuevaMesa = {
+          id: Math.random().toString(36).substr(2, 9),
+          nombre: this.nombreNuevaMesa,
+          capacidad: parseInt(this.capacidadNuevaMesa),
+          estado: 'Libre',
+          mesero: null,
+          tiempoOcupada: 0
+        };
+        this.mesas.push(nuevaMesa);
+        this.cerrarModalAgregarMesa();
+      },
+      gestionarMesa(mesa) {
+        this.mesaSeleccionada = mesa;
+        this.modalActivo = true;
+      },
+      ocuparMesa() {
+        if (this.mesaSeleccionada) {
+          this.mesaSeleccionada.estado = 'Ocupada';
+          this.mesaSeleccionada.tiempoOcupada = 0;
+          this.modalActivo = false;
+          this.startTimer();
+        }
+      },
+      desocuparMesa() {
+        if (this.mesaSeleccionada) {
+          this.mesaSeleccionada.estado = 'Libre';
+          this.mesaSeleccionada.mesero = null;
+          this.modalActivo = false;
+          clearInterval(this.timer);
+        }
+      },
+      eliminarMesa(mesa) {
+        const clave = prompt('Por favor, ingrese la clave para eliminar la mesa:');
+        if (clave === '1234') {
+          const index = this.mesas.findIndex(item => item.id === mesa.id);
+          if (index !== -1) {
+            this.mesas.splice(index, 1);
+          }
+        } else {
+          alert('Clave incorrecta. La mesa no puede ser eliminada.');
+        }
+      },
+      cerrarModal() {
+        this.modalActivo = false;
+      },
+      cerrarModalAgregarMesa() {
+        this.modalAgregarMesa = false;
+      },
+      startTimer() {
+        this.timer = setInterval(() => {
+          this.mesaSeleccionada.tiempoOcupada++;
+        }, 1000);
+      },
+      formatTime(seconds) {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        return `Tiempo: ${this.pad(hours)}:${this.pad(minutes)}:${this.pad(secs)}`;
+      },
+      pad(value) {
+        return value < 10 ? '0' + value : value;
+      }
+    }
+  }
+  </script>
+  
