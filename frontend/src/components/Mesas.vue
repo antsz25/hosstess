@@ -108,22 +108,47 @@
         this.mesaSeleccionada = mesa;
         this.modalActivo = true;
       },
-      ocuparMesa() {
-        if (this.mesaSeleccionada) {
-          this.mesaSeleccionada.disponible = false;
-          this.mesaSeleccionada.tiempoOcupada = 0;
-          this.mesaSeleccionada.personaTitular = this.mesas.personaTitular;
-          this.modalActivo = false;
-          this.startTimer();
+      async ocuparMesa() {
+        try{
+          if (this.mesaSeleccionada) {
+            const request = {
+              disponible: false,
+              mesero: 'Mesero de Prueba',
+              personaTitular: 'Persona de Prueba'
+            };
+            const result = await Axios.put('/mesas/change/'+this.mesaSeleccionada.numero, request);
+            if(result.status == 200){
+              this.mesaSeleccionada.disponible = false;
+              this.mesaSeleccionada.tiempoOcupada = 0;
+              this.mesaSeleccionada.mesero = request.mesero;
+              this.mesaSeleccionada.personaTitular = request.personaTitular;
+              this.modalActivo = false;
+              this.startTimer();
+            }
+          }
+        }catch(error){
+          console.error('Error al ocupar mesa:', error);
         }
       },
-      desocuparMesa() {
-        if (this.mesaSeleccionada) {
-          this.mesaSeleccionada.disponible = true;
-          this.mesaSeleccionada.mesero = null;
-          this.mesaSeleccionada.personaTitular = null;
-          this.modalActivo = false;
-          clearInterval(this.timer);
+      async desocuparMesa() {
+        try{
+          if (this.mesaSeleccionada) {
+            const request = {
+              disponible: true,
+              mesero: null,
+              personaTitular: null
+            };
+            const result = await Axios.put('/mesas/change/'+this.mesaSeleccionada.numero, request);
+            if(result.status == 200){
+              this.mesaSeleccionada.disponible = true;
+              this.mesaSeleccionada.mesero = null;
+              this.mesaSeleccionada.personaTitular = null;
+              this.modalActivo = false;
+              clearInterval(this.timer);
+            }
+          }
+        }catch(error){
+          console.error('Error al desocupar mesa:', error);
         }
       },
       eliminarMesa(mesa) {

@@ -14,18 +14,16 @@ import { ref, onMounted } from 'vue';
 import Axios from '../main.ts';
 
 
-const mesas = ref([
-  // Agrga más mesas según sea necesario
-]);
+const mesas = ref([]); //Definicion de referencia reactiva
 
 
 onMounted(async () => {
-  mesas.value = await RefillMesas();
+  mesas.value = await RefillMesas(); //Rellena el objeto mesas
 });
 
 async function RefillMesas() {
   try {
-    const response = await Axios.get('/mesas/all');
+    const response = await Axios.get('/mesas/');
     console.log(response.data);
     return response.data || []; // Return data or an empty array if no data is received
   } catch (error) {
