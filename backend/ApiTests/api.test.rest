@@ -15,7 +15,8 @@ content-type:application/json
   "name":"prueba2",
   "email":"6@gmail.com",
   "password":"prueba123",
-  "cellphone":"6645861400"
+  "cellphone":"6645861400",
+  "role":"waiter"
 }
 ###
 //GET MESAS

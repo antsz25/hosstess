@@ -11,11 +11,14 @@ async function FindUserByEmail(email){
 async function LoginUsuario(email){
     return await db.LoginUsuario(email);
 }
-
+async function FindUserByRole(role){
+    return await db.FinderUserByRole(role);
+}
 
 
 module.exports = {
     CreateUser,
     FindUserByEmail,
-    LoginUsuario
+    LoginUsuario,
+    FindUserByRole
 }

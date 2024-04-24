@@ -45,7 +45,7 @@ const LoginUsuario = async(req,res,next) =>{
                     userId:search._id,
                     userRole:search.role
                 });
-                res.cookie('token',token, {httpOnly: true, maxAge: 24*60*60*1000});
+                localStorage.setItem('token',`Bearer: ${token}`);
                 req.role = search.role;
                 next();
                 return
@@ -57,8 +57,26 @@ const LoginUsuario = async(req,res,next) =>{
         return res.status(500).send(error);
     }
 }
+//Encontrar a meseros
+const FindUserByRole = async(req,res)=>{
+    try{
+        if(req.params.role != "waiter"){ return;}
+        const search = await service.FindUserByRole(req.params.role);
+        if(search){
+            return res.status(200).send(search);
+        }
+        else{
+            return res.status(404).send("Meseros no encontrados");
+        }
+    }catch(err){
+        console.error(err);
+        return res.status(500).send(err);
+    }
+
+}
 module.exports ={
     CreateUser,
     FindUserByEmail,
-    LoginUsuario
+    LoginUsuario,
+    FindUserByRole
 };

@@ -21,6 +21,10 @@ async function LoginUsuario(email){
   .findOne({email});
   return find;
 }
+async function FindUserByRole(role){
+  const result = await dbConnection.collection("users".findOne({role}));
+  return result;
+}
 //Logica de Mesas
 async function AddMesa(data){
   const result = await dbConnection.collection("mesas").insertOne(data);
@@ -55,5 +59,6 @@ module.exports = {
     Getmesas,
     GetMesaById,
     DeleteMesa,
-    CloseMesas
+    CloseMesas,
+    FindUserByRole
 };

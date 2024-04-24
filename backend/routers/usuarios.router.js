@@ -6,6 +6,7 @@ const userController = require('../controllers/user.controller');
 //REST
 //GET
 router.get('/find',upload.none(),userController.FindUserByEmail);
+router.get('/waiters/:role', upload.none(),userController.FindUserByRole);
 //POST
 router.post('/register',upload.none(),userController.CreateUser);
 router.post('/login',upload.none(),userController.LoginUsuario, (req,res)=>{
