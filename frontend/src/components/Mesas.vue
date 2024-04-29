@@ -9,7 +9,7 @@
         </svg>
       </button>
       <!-- Visualización de mesas -->
-      <div class="grid grid-cols-2 gap-4 z-10 relative">
+      <div class="grid grid-cols-3 gap-4 z-10 relative">
         <div v-for="mesa in mesas" :key="mesa.id">
           <div class="relative">
             <div @click="gestionarMesa(mesa)" class="cursor-pointer p-6 rounded-lg shadow-md border border-gray-300 bg-white">

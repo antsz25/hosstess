@@ -2,14 +2,14 @@
   <div class="flex h-screen">
     <Navbar />
     <Mesas :mesas="mesas" @mostrar-cuenta="mostrarCuenta" />
-    <DetallesMesa :mesaSeleccionada="mesaSeleccionada" />
+    
   </div>
 </template>
 
 <script setup>
 import Navbar from '../components/Sidebar.vue';
 import Mesas from '../components/Mesas.vue';
-import DetallesMesa from '../components/DetallesMesa.vue';
+
 import { ref, onMounted } from 'vue';
 import Axios from '../main.ts';
 
