@@ -24,6 +24,8 @@ export default Axios;
 // Importa tus componentes de Vue Router aquí
 // Por ejemplo:
 import main from "./views/MainComponent.vue";
+import Login from "./views/LoginComponent.vue";
+import Register from "./views/RegisterComponent.vue";
 // import About from './components/About.vue';
 
 // Define el tipo para las rutas
@@ -32,6 +34,16 @@ const routes: RouteRecordRaw[] = [
     path: '/',
     name: 'main',
     component: main,
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: Login,
+  },
+  {
+    path: '/register',
+    name: 'register',
+    component: Register,
   },
   
 ];
