@@ -22,21 +22,12 @@
                     </div>
                 </div>
                 <div>
-                    <label for="cellphone" class="block text-sm font-medium text-gray-700">N&uacute;mero Telef&oacute;nico</label>
-                    <input type="tel" id="cellphone" v-model="cellphone" pattern="\d" title="Solo se admiten numeros" maxlength="10" class="input-field" required />
-                </div>
-                <div>
                     <label for="birthdate" class="block text-sm font-medium text-gray-700">Fecha de Nacimiento</label>
                     <input type="date" id="birthdate" v-model="birthdate" class="input-field" required />
                 </div>
                 <div>
                     <label for="username" class="block text-sm font-medium text-gray-700">Usuario</label>
                     <input type="text" id="username" v-model="username" class="input-field" placeholder="Usuario"
-                        required />
-                </div>
-                <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700">Correo Electr&oacute;nico</label>
-                    <input type="text" id="email" v-model="email" class="input-field" placeholder="Correo Electr&oacute;nico"
                         required />
                 </div>
                 <div>
@@ -49,6 +40,22 @@
                         Contraseña</label>
                     <input type="password" id="confirmPassword" v-model="confirmPassword" class="input-field"
                         placeholder="Confirmar Contraseña" required />
+                </div>
+                <div>
+                    <label for="role" class="block text-sm font-medium text-gray-700">Puesto</label>
+                    <select id="role" v-model="role" class="input-field" required>
+                        <option value="admin">Admin</option>
+                        <option value="mesero">Mesero</option>
+                        <option value="hostess">Hostess</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="workSchedule" class="block text-sm font-medium text-gray-700">Horario Laboral</label>
+                    <select id="workSchedule" v-model="workSchedule" class="input-field" required>
+                        <option value="morning">Mañana (8am - 4pm)</option>
+                        <option value="afternoon">Tarde (12pm - 8pm)</option>
+                        <option value="evening">Noche (4pm - 12am)</option>
+                    </select>
                 </div>
                 <!-- Botón de registro -->
                 <button type="submit"
@@ -74,7 +81,6 @@ export default {
             lastName: '',
             birthdate: '',
             username: '',
-            email: '',
             password: '',
             confirmPassword: '',
             role: 'mesero', // Valor predeterminado: mesero
@@ -88,22 +94,20 @@ export default {
             console.log('Apellido:', this.lastName);
             console.log('Fecha de Nacimiento:', this.birthdate);
             console.log('Usuario:', this.username);
-            console.log('Email:', this.email);
             console.log('Contraseña:', this.password);
-            console.log('Confirmar Contraseña:', this.confirmPassword)
             console.log('Puesto:', this.role);
             console.log('Horario Laboral:', this.workSchedule);
-            /*const request = await Axios.post("clientes/register",{
+            const request = await Axios.post("clientes/register",{
                 name: this.firstName +" "+this.lastName,
                 birthdate: this.birthdate,
                 username: this.username,
                 
-            })*/
+            })
 
             // Por ejemplo, puedes enviar una solicitud HTTP para guardar los datos del usuario en la base de datos
 
             // Redirigir al usuario a la página de inicio de sesión después del registro (opcional)
-            /*this.$router.push('/login');*/
+            this.$router.push('/login');
         }
     }
 };

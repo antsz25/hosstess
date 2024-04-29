@@ -6,19 +6,19 @@
 
         <!-- Contenedor principal -->
         <div class="z-10 max-w-md w-full bg-white bg-opacity-90 shadow-lg rounded-lg overflow-hidden p-8">
-            <h2 class="text-3xl font-semibold text-center text-red-600 py-6">Login</h2>
+            <h2 class="text-3xl font-semibold text-center text-red-600 py-6">Ingresar</h2>
             <form @submit.prevent="login" class="px-8 py-6">
                 <div class="mb-4">
-                    <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                    <label for="username" class="block text-sm font-medium text-gray-700">Usuario o correo electr&oacute;nico</label>
                     <input type="text" id="username" v-model="username" class="input-field"
-                        placeholder="Enter your username" required />
+                        placeholder="Enter your username or email" required />
                 </div>
                 <div class="mb-4">
-                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Contraseña</label>
                     <input type="password" id="password" v-model="password" class="input-field"
                         placeholder="Enter your password" required />
                 </div>
-                <button type="submit"
+                <button type="submit" @onClick="Ingresar"
                     class="w-full py-2 px-4 rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400">
                     Log in
                 </button>
@@ -33,18 +33,29 @@
 </template>
 
 <script>
+import Axios from '../main.ts';
 export default {
     data() {
         return {
             username: '',
-            password: ''
+            password: '',
+            error: false
         };
     },
     methods: {
-        login() {
-            console.log('Username:', this.username);
-            console.log('Password:', this.password);
-            // Aquí podrías implementar la lógica de inicio de sesión utilizando una solicitud HTTP, por ejemplo
+        async login() {
+            try{
+                const request = await Axios.post('clientes/login',{
+                    data: this.username,
+                    password: this.password
+                });      
+                if(request.status !== 200){throw new Error ()}
+                localStorage.setItem("token","Bearer: "+request.data.token);
+                this.$router.push('/main');
+            }catch(err){
+                console.error('Error logging in:', err.message);
+                return this.error = true;
+            }
         }
     }
 };

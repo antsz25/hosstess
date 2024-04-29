@@ -4,6 +4,7 @@ const userSchema = Joi.object({
     email: Joi.string().email().required(),
     password: Joi.string().required(),
     cellphone: Joi.string().min(10).max(10).required().pattern(/^^\d{10}$$/),
+    fecha_nacimiento: Joi.date().required(),
     mesa: Joi.number().optional().default(0), // Mesa no asignada ubicada como mesa 0
     role: Joi.string().valid('admin','waiter' ,'client').default('client'),
 })

@@ -31,12 +31,12 @@ import Register from "./views/RegisterComponent.vue";
 // Define el tipo para las rutas
 const routes: RouteRecordRaw[] = [
   {
-    path: '/',
+    path: '/main',
     name: 'main',
     component: main,
   },
   {
-    path: '/login',
+    path: '/',
     name: 'login',
     component: Login,
   },

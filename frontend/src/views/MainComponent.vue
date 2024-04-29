@@ -24,7 +24,6 @@ onMounted(async () => {
 async function RefillMesas() {
   try {
     const response = await Axios.get('/mesas/');
-    console.log(response.data);
     return response.data || []; // Return data or an empty array if no data is received
   } catch (error) {
     console.error('Error fetching mesas:', error);

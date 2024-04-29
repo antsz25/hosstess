@@ -36,25 +36,25 @@ const FindUserByEmail = async(req,res)=>{
 //Login
 const LoginUsuario = async(req,res,next) =>{
     try{
-        const search = await service.FindUserByEmail(req.body.email);
+        const search = await service.LoginUsuario(req.body.data);
         if(search){
             const compare = await hasher.checkPassword(req.body.password,search.password);
             if(compare){
                 //Creacion del JWT y cookie de usuario
                 const token = await jwtCreator.generateJWT({
-                    userId:search._id,
+                    userId:search.username,
                     userRole:search.role
                 });
-                localStorage.setItem('token',`Bearer: ${token}`);
+                req.token = token;
                 req.role = search.role;
                 next();
                 return
             }
         }
-        return res.status(400).send("Correo o contraseña incorrecta");
+        return res.status(404).send("Correo o contraseña incorrecta");
     }catch(error){
-        console.error(error);
-        return res.status(500).send(error);
+        console.error(error.message);
+        return res.status(500).send(error.message);
     }
 }
 //Encontrar a meseros
@@ -74,9 +74,25 @@ const FindUserByRole = async(req,res)=>{
     }
 
 }
+const FindUserByUsername = async(req,res)=>{
+    try{
+        const search = await service.FindUserByUsername(req.body.username);
+        if(search){
+            return res.status(200).send(search);
+        }
+        else{
+            return res.status(404).send("Usuario no encontrado");
+        }
+    }catch(err){
+        console.error(err);
+        return res.status(500).send(err);
+    }
+
+}
 module.exports ={
     CreateUser,
     FindUserByEmail,
     LoginUsuario,
-    FindUserByRole
+    FindUserByRole,
+    FindUserByUsername
 };

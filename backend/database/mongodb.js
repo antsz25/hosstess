@@ -12,17 +12,22 @@ async function CreateUser(data){
   return result;
 }
 async function FindUserByEmail(email){
-  const result = await dbConnection.collection("users").findOne({email});
+  const result = await dbConnection.collection("users").findOne({email: email});
   return result;
 }
-async function LoginUsuario(email){
-  const find = await dbConnection
-  .collection("users")
-  .findOne({email});
-  return find;
+async function LoginUsuario(data){
+  let find = await FindUserByUsername(data);
+  if(find){return find}
+  find = await FindUserByEmail(data);
+  if(find){return find}
+  return null;
 }
 async function FindUserByRole(role){
-  const result = await dbConnection.collection("users".findOne({role}));
+  const result = await dbConnection.collection("users").findOne({role});
+  return result;
+}
+async function FindUserByUsername(username){
+  const result = await dbConnection.collection("users").findOne({username: username});
   return result;
 }
 //Logica de Mesas
@@ -60,5 +65,6 @@ module.exports = {
     GetMesaById,
     DeleteMesa,
     CloseMesas,
-    FindUserByRole
+    FindUserByRole,
+    FindUserByUsername
 };
