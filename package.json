@@ -1,0 +1,19 @@
+{
+  "name": "minuta",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "back:dev": "cd backend && npm run dev",
+    "front:dev": "cd frontend && npm run dev",
+    "dev": "npm run back:dev & npm run front:dev --parallel"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "workspaces":[
+    "frontend",
+    "backend"
+  ]
+}
