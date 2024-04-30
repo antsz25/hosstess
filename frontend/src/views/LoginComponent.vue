@@ -2,7 +2,7 @@
     <div class="relative min-h-screen flex items-center justify-center">
         <!-- Fondo con imagen y opacidad -->
         <div class="absolute inset-0 bg-cover bg-center"
-            style="background-image: url('https://i.imgur.com/W2nDi4U.png'); filter: brightness(80%);"></div>
+            style="background-image: url('https://i.imgur.com/xHIWOer.png'); filter: brightness(80%);"></div>
 
         <!-- Contenedor principal -->
         <div class="z-10 max-w-md w-full bg-white bg-opacity-90 shadow-lg rounded-lg overflow-hidden p-8">

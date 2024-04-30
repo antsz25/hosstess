@@ -7,7 +7,7 @@
   "scripts": {
     "back:dev": "cd backend && npm run dev",
     "front:dev": "cd frontend && npm run dev",
-    "dev": "npm run back:dev & npm run front:dev --parallel"
+    "dev": "npm run back:dev && npm run front:dev --parallel"
   },
   "keywords": [],
   "author": "",
