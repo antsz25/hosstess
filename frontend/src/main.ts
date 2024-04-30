@@ -26,6 +26,7 @@ export default Axios;
 import main from "./views/MainComponent.vue";
 import Login from "./views/LoginComponent.vue";
 import Register from "./views/RegisterComponent.vue";
+import meseros from "./views/meserosComponent.vue";
 // import About from './components/About.vue';
 
 // Define el tipo para las rutas
@@ -44,6 +45,11 @@ const routes: RouteRecordRaw[] = [
     path: '/register',
     name: 'register',
     component: Register,
+  },
+  {
+    path: '/meseros',
+    name: 'meseros',
+    component: meseros,
   },
   
 ];
