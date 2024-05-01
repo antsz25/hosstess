@@ -22,8 +22,8 @@
                     class="w-full py-2 px-4 rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400">
                     Log in
                 </button>
+                <span v-if="error" class="text-center text-red-500 mt-4">Usuario o contraseña incorrectos</span>
             </form>
-
             <!-- Enlace para redirigir al componente de registro -->
             <router-link to="/register" class="block text-center text-sm text-gray-600 mt-4 hover:text-gray-800">
                 ¿No tienes cuenta? Regístrate aquí
@@ -45,7 +45,7 @@ export default {
     methods: {
         async login() {
             try{
-                const request = await Axios.post('clientes/login',{
+                const request = await Axios.post('usuarios/login',{
                     data: this.username,
                     password: this.password
                 });      
@@ -54,7 +54,7 @@ export default {
                 this.$router.push('/main');
             }catch(err){
                 console.error('Error logging in:', err.message);
-                return this.error = true;
+                this.error = true;
             }
         }
     }
