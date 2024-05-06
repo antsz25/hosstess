@@ -8,7 +8,7 @@
       <div class="absolute inset-0 bg-black opacity-75" @click="cerrarMesa"></div>
       <h2 class="text-2xl font-semibold mb-4 z-10 relative text-red-500">Gestor de Mesas y Meseros</h2>
       <!-- Botón para agregar mesa -->
-      <button @click="agregarMesa"
+      <button @click="mostrarModalAgregarMesa"
         class="absolute top-4 right-4 z-10 p-2 rounded-full bg-gray-200 hover:bg-gray-300 focus:outline-none">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd"
@@ -20,7 +20,7 @@
       <div class="grid grid-cols-3 gap-4 z-10 relative">
         <div v-for="mesa in mesas" :key="mesa.id">
           <div class="relative">
-            <div @click="gestionarMesa(mesa)"
+            <div @click="mostrarModalGestionarMesa(mesa)"
               class="cursor-pointer p-6 rounded-lg shadow-md border border-gray-300 bg-white">
               <h3 class="font-semibold text-lg text-red-500">{{ mesa.nombre }}</h3>
               <p class="mt-2 text-base text-gray-700">Capacidad: {{ mesa.capacidad }}</p>
@@ -29,10 +29,7 @@
                 <span v-else class="bg-red-500 px-2 py-1 text-white rounded-full">Ocupada</span>
               </p>
               <p class="mt-1 text-base text-gray-700">Titular: {{ mesa.personaTitular ? mesa.personaTitular : 'Sin asignar' }}</p>
-
-              <p class="mt-1 text-base text-gray-700">Titular: {{ mesa.personaTitular ? mesa.personaTitular : 'Sin asignar' }}</p>
-              <p v-if="mesa.disponible === false" class="mt-1 text-base text-gray-700">{{ formatTime(mesa.tiempoOcupada)
-                }}</p>
+              <p v-if="!mesa.disponible" class="mt-1 text-base text-gray-700">{{ formatTime(mesa.tiempoOcupada) }}</p>
             </div>
             <button @click="eliminarMesa(mesa)"
               class="absolute top-2 right-2 text-red-500 hover:text-red-700 focus:outline-none">
@@ -92,26 +89,101 @@ import Navbar from '../components/Sidebar.vue';
 import { ref, onMounted } from 'vue';
 import Axios from '../main.ts';
 
-const mesas = ref([]); // Definición de referencia reactiva
+const mesas = ref([]);
+const modalActivo = ref(false);
+const modalAgregarMesa = ref(false);
+const nombreNuevaMesa = ref('');
+const capacidadNuevaMesa = ref('');
 
 onMounted(async () => {
-  mesas.value = await RefillMesas(); // Rellena el objeto mesas al montar el componente
+  mesas.value = await refillMesas();
 });
 
-async function RefillMesas() {
+async function refillMesas() {
   try {
     const response = await Axios.get('/mesas/');
-    return response.data || []; // Retorna los datos o un array vacío si no hay datos
+    return response.data || [];
   } catch (error) {
     console.error('Error al obtener mesas:', error);
-    return []; // Retorna un array vacío en caso de error
+    return [];
+  }
+}
+
+async function agregarNuevaMesa() {
+  try {
+    const nuevaMesa = {
+      nombre: nombreNuevaMesa.value,
+      capacidad: capacidadNuevaMesa.value,
+      disponible: true // Nueva mesa se agrega como disponible por defecto
+    };
+    await Axios.post('/mesas/add', nuevaMesa);
+    mesas.value = await refillMesas(); // Actualizar lista de mesas
+    cerrarModalAgregarMesa(); // Cerrar modal de agregar mesa
+  } catch (error) {
+    console.error('Error al agregar mesa:', error);
+  }
+}
+
+function mostrarModalAgregarMesa() {
+  modalAgregarMesa.value = true;
+}
+
+function cerrarModalAgregarMesa() {
+  modalAgregarMesa.value = false;
+}
+
+function mostrarModalGestionarMesa(mesa) {
+  mesaSeleccionada.value = mesa;
+  modalActivo.value = true;
+}
+
+async function ocuparMesa() {
+  try {
+    if (mesaSeleccionada.value) {
+      const numeroMesa = mesaSeleccionada.value.numero;
+      await Axios.put(`/mesas/change/${numeroMesa}`, { disponible: false });
+      mesas.value = await refillMesas(); // Actualizar lista de mesas
+      cerrarMesa(); // Cerrar modal de gestión de mesa
+    }
+  } catch (error) {
+    console.error('Error al ocupar mesa:', error);
+  }
+}
+
+async function desocuparMesa() {
+  try {
+    if (mesaSeleccionada.value) {
+      const numeroMesa = mesaSeleccionada.value.numero;
+      await Axios.put(`/mesas/change/${numeroMesa}`, { disponible: true });
+      mesas.value = await refillMesas(); // Actualizar lista de mesas
+      cerrarMesa(); // Cerrar modal de gestión de mesa
+    }
+  } catch (error) {
+    console.error('Error al desocupar mesa:', error);
+  }
+}
+
+async function eliminarMesa(mesa) {
+  try {
+    const numeroMesa = mesa.numero;
+    // Asumiendo que el backend tiene un endpoint DELETE para eliminar la mesa
+    await Axios.delete(`/mesas/change/${numeroMesa}`);
+    mesas.value = mesas.value.filter((m) => m.numero !== numeroMesa); // Eliminar la mesa de la lista local
+  } catch (error) {
+    console.error('Error al eliminar mesa:', error);
   }
 }
 
 const mesaSeleccionada = ref(null);
 
-function mostrarCuenta(mesa) {
-  mesaSeleccionada.value = mesa;
+function cerrarMesa() {
+  modalActivo.value = false;
+  mesaSeleccionada.value = null;
+}
+
+function formatTime(tiempoOcupada) {
+  // Lógica para formatear el tiempo ocupado, si es necesario
+  return tiempoOcupada;
 }
 </script>
 
