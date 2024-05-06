@@ -24,14 +24,22 @@
       </ul>
 
       <!-- Botón de logout -->
-      <button class="hover:text-gray-200 mt-auto mb-4 px-4 py-2 rounded-full bg-gray-800 hover:bg-gray-700 focus:outline-none">Cerrar sesión</button>
+      <button @click="logout" class="hover:text-gray-200 mt-auto mb-4 px-4 py-2 rounded-full bg-gray-800 hover:bg-gray-700 focus:outline-none">Cerrar sesión</button>
     </nav>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Sidebar'
+  name: 'Sidebar',
+  methods: {
+    logout() {
+      //Elimina la sesion del usuario
+      localStorage.removeItem('token');
+      //Redirige al usuario a la pagina de inicio
+      this.$router.push('/');
+    }
+  }
 }
 </script>
 

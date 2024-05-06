@@ -23,7 +23,9 @@
                 </div>
                 <div>
                     <label for="cellphone" class="block text-sm font-medium text-gray-700">N&uacute;mero Telef&oacute;nico</label>
-                    <input type="tel" id="cellphone" v-model="cellphone" pattern="\d" title="Solo se admiten numeros" maxlength="10" class="input-field" required />
+                    <input type="text" id="cellphone" v-model="cellphone" maxlength="14" placeholder="(xxx)-xxx-xxxx" class="input-field"
+                    :on-change="validateNum" required />         
+                    <label v-if="formatCellphoneError" for="cellphone" class="block text-sm font-medium text-red-700">Formato de n&uacute;mero incorrecto</label>
                 </div>
                 <div>
                     <label for="birthdate" class="block text-sm font-medium text-gray-700">Fecha de Nacimiento</label>
@@ -49,13 +51,31 @@
                         Contraseña</label>
                     <input type="password" id="confirmPassword" v-model="confirmPassword" class="input-field"
                         placeholder="Confirmar Contraseña" required />
+                    <label v-if="differentsPassword" for="cellphone" class="block text-sm font-medium text-red-700">Las contraseñas no coinciden</label>
+                </div>
+                <div>
+                    <label for="role" class="block text-sm font-medium text-gray-700">Puesto</label>
+                    <select id="role" v-model="role" class="input-field" required>
+                        <option value="waiter">Mesero</option>
+                        <option value="hostess">Hostess</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="workSchedule" class="block text-sm font-medium text-gray-700">Horario Laboral</label>
+                    <select id="workSchedule" v-model="workSchedule" class="input-field" required>
+                        <option value="morning">Mañana (8am - 4pm)</option>
+                        <option value="afternoon">Tarde (12pm - 8pm)</option>
+                        <option value="evening">Noche (4pm - 12am)</option>
+                    </select>
                 </div>
                 <!-- Botón de registro -->
                 <button type="submit"
                     class="w-full py-2 px-4 rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400">
                     Registrar
                 </button>
-
+                <router-link v-if="confirmRequest" to="/" class="block text-center text-base text-green-700 underline mt-4 hover:text-gray-800">
+                    Registro exitoso. Da clic aqu&iacute; para iniciar sesi&oacute;n
+                </router-link>
                 <!-- Enlace a la página de inicio de sesión -->
                 <router-link to="/" class="block text-center text-sm text-gray-600 mt-4 hover:text-gray-800">
                     ¿Ya tienes cuenta? Iniciar sesión
@@ -73,33 +93,80 @@ export default {
             firstName: '',
             lastName: '',
             birthdate: '',
+            cellphone: '',
             username: '',
             email: '',
             password: '',
+            formatCellphoneError: false,
             confirmPassword: '',
-            role: 'mesero', // Valor predeterminado: mesero
+            differentsPassword: false,
+            confirmRequest: false,
+            role: 'waiter', // Valor predeterminado: mesero
             workSchedule: 'morning' // Valor predeterminado: mañana
         };
     },
+    computed:{
+        validateNum(){
+            let num = this.cellphone;
+            let regex = /\D/i;
+            num = num.replace(/\-/g,"");
+            num = num.replace(/\(/g,"");
+            num = num.replace(/\)/g,"");
+            num = num.replace(/\s/g,"")
+            if(regex.test(num)){
+                this.formatCellphoneError = true;
+            }else{
+                this.formatCellphoneError = false;
+                if(num.length == 10){
+                    let newNum = "("+num.substring(0,3)+")-"+num.substring(3,6)+"-"+num.substring(6,10);
+                    this.cellphone = newNum;
+                }
+            }
+        }
+    },
     methods: {
         async register() {
-            // Aquí puedes implementar la lógica para registrar al usuario
-            console.log('Nombre:', this.firstName);
-            console.log('Apellido:', this.lastName);
-            console.log('Fecha de Nacimiento:', this.birthdate);
-            console.log('Usuario:', this.username);
-            console.log('Email:', this.email);
-            console.log('Contraseña:', this.password);
-            console.log('Confirmar Contraseña:', this.confirmPassword)
-            console.log('Puesto:', this.role);
-            console.log('Horario Laboral:', this.workSchedule);
-            /*const request = await Axios.post("clientes/register",{
-                name: this.firstName +" "+this.lastName,
-                birthdate: this.birthdate,
-                username: this.username,
-                
-            })*/
-
+            try{
+                if(this.formatCellphoneError){
+                    let input = document.getElementById("cellphone");
+                    input.focus();
+                    return;
+                }
+                if(this.password != this.confirmPassword){
+                    let input = document.getElementById("confirmPassword");
+                    this.differentsPassword = true;
+                    input.focus();
+                    return;
+                }
+                let num = this.cellphone;
+                num = num.replace(/\-/g,"");
+                num = num.replace(/\(/g,"");
+                num = num.replace(/\)/g,"");
+                num = num.replace(/\s/g,"")
+                if(num.length != 10){
+                    let input = document.getElementById("cellphone");
+                    input.focus();
+                    this.formatCellphoneError = true;
+                    return;
+                }
+                const request = await Axios.post("usuarios/register",{
+                    name: this.firstName,
+                    lastName: this.lastName,
+                    birthDate: this.birthdate,
+                    email: this.email,
+                    username: this.username,
+                    password: this.password,
+                    cellphone: num,
+                })
+                if(request.status == 201){
+                    this.confirmRequest = true;
+                }
+                else{
+                    throw new Error("Error al registrar: ", request.data.message);
+                }
+            }catch(error){
+                console.log(error);
+            }
             // Por ejemplo, puedes enviar una solicitud HTTP para guardar los datos del usuario en la base de datos
 
             // Redirigir al usuario a la página de inicio de sesión después del registro (opcional)

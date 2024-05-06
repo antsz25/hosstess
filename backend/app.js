@@ -12,7 +12,7 @@ app.use(cors(corsoptions));
 app.set("trust proxy", 1);
 
 //Routes
-app.use('/clientes', require('./routers/usuarios.router'));
+app.use('/usuarios', require('./routers/usuarios.router'));
 app.use('/mesas', require('./routers/mesas.router'));
 
 server.listen(process.env.PORT, () => {
