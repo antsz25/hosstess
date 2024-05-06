@@ -16,7 +16,7 @@
           <router-link to="/meseros" class="sidebar-link">Personal</router-link>
         </li>
         <li>
-          <router-link to="/lista-espera" class="sidebar-link">Lista de Espera</router-link>
+          <router-link to="/waitlist" class="sidebar-link">Lista de Espera</router-link>
         </li>
         <li>
           <router-link to="/mesas" class="sidebar-link">Mesas</router-link>

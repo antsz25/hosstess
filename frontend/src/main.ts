@@ -27,6 +27,7 @@ import main from "./views/MainComponent.vue";
 import Login from "./views/LoginComponent.vue";
 import Register from "./views/RegisterComponent.vue";
 import meseros from "./views/meserosComponent.vue";
+import waitlist from "./views/WaitListComponent.vue";
 // import About from './components/About.vue';
 
 // Define el tipo para las rutas
@@ -50,6 +51,11 @@ const routes: RouteRecordRaw[] = [
     path: '/meseros',
     name: 'meseros',
     component: meseros,
+  },
+  {
+    path: '/waitlist',
+    name: 'waitlist',
+    component: waitlist,
   },
   
 ];
