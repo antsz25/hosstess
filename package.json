@@ -7,6 +7,7 @@
   "scripts": {
     "back:dev": "cd backend && npm run dev",
     "front:dev": "cd frontend && npm run dev",
+    "front:prod": "cd frontend && npm run build",
     "dev": "npm-run-all --parallel back:dev front:dev"
   },
   "keywords": [],
@@ -16,6 +17,9 @@
     "frontend",
     "backend"
   ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "devDependencies": {
     "npm-run-all": "^4.1.5"
   }
