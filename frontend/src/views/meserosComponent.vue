@@ -26,6 +26,13 @@
           <h3 class="font-semibold text-lg text-red-500">{{ mesero.nombre }}</h3>
           <p class="mt-2 text-base text-gray-700">Edad: {{ mesero.edad }}</p>
           <p class="mt-1 text-base text-gray-700">Turno: {{ mesero.turno }}</p>
+          <p class="mt-1 text-base text-gray-700">Estado: 
+            <span :class="{
+              'bg-green-500 text-white py-1 px-2 rounded': calcularEstadoMesero(mesero) === 'Disponible',
+              'bg-yellow-500 text-white py-1 px-2 rounded': calcularEstadoMesero(mesero) === 'Ocupado',
+              'bg-gray-500 text-white py-1 px-2 rounded': calcularEstadoMesero(mesero) === 'No trabajando'
+            }">{{ calcularEstadoMesero(mesero) }}</span>
+          </p>
           <button @click="eliminarMesero(mesero.id)"
             class="mt-2 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 focus:outline-none">
             Eliminar
@@ -42,8 +49,13 @@
               placeholder="Nombre">
             <input v-model.number="nuevoMesero.edad" type="number" class="w-full px-3 py-2 border rounded-md"
               placeholder="Edad">
-            <input v-model="nuevoMesero.turno" type="text" class="w-full px-3 py-2 border rounded-md"
-              placeholder="Turno">
+            <!-- Menú desplegable para seleccionar el turno -->
+            <select v-model="nuevoMesero.turno" class="w-full px-3 py-2 border rounded-md">
+              <option value="">Seleccionar Turno</option>
+              <option value="Mañana">Mañana</option>
+              <option value="Tarde">Tarde</option>
+              <option value="Noche">Noche</option>
+            </select>
             <div class="flex justify-end">
               <button type="submit"
                 class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none">Agregar</button>
@@ -55,8 +67,6 @@
       </div>
 
     </div>
-
-
   </div>
 </template>
 
@@ -66,7 +76,6 @@ import Navbar from '../components/Sidebar.vue';
 export default {
   components: {
     Navbar,
-
   },
   data() {
     return {
@@ -82,6 +91,23 @@ export default {
       },
       mostrandoModal: false
     };
+  },
+  computed: {
+    // Función computada para determinar el estado de un mesero en base a la hora local
+    calcularEstadoMesero() {
+      return (mesero) => {
+        const horaActual = new Date().getHours(); // Obtiene la hora actual del sistema
+        const turnoInicio = this.obtenerHoraTurno(mesero.turno); // Obtiene la hora de inicio del turno del mesero
+
+        if (horaActual >= turnoInicio && horaActual < turnoInicio + 8) {
+          return 'Ocupado'; // Si la hora actual está dentro del turno, el mesero está ocupado
+        } else if (horaActual >= turnoInicio - 1 && horaActual < turnoInicio + 1) {
+          return 'Disponible'; // Si la hora actual está cerca del inicio del turno, el mesero está disponible
+        } else {
+          return 'No trabajando'; // En cualquier otro caso, el mesero no está trabajando
+        }
+      };
+    }
   },
   methods: {
     mostrarModal() {
@@ -114,6 +140,19 @@ export default {
       const index = this.meseros.findIndex(m => m.id === id);
       if (index !== -1) {
         this.meseros.splice(index, 1);
+      }
+    },
+    // Función para obtener la hora de inicio del turno en base al nombre del turno
+    obtenerHoraTurno(turno) {
+      switch (turno.toLowerCase()) {
+        case 'mañana':
+          return 8; // Turno de mañana empieza a las 8 AM
+        case 'tarde':
+          return 16; // Turno de tarde empieza a las 4 PM
+        case 'noche':
+          return 0; // Turno de noche empieza a las 12 AM
+        default:
+          return 0; // Por defecto, se asume turno de noche si no se reconoce el turno
       }
     }
   }
