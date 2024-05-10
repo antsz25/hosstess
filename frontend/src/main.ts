@@ -9,6 +9,7 @@ import "./index.css";
 
 //Axios configuration
 let baseUrl: string = "";
+console.log(import.meta.env);
 if (import.meta.env.DEV) baseUrl = "http://localhost:3001/";
 if (import.meta.env.PROD) baseUrl = "https://hosstessback.netlify.app/";
 const token: string | null = localStorage.getItem("token");
