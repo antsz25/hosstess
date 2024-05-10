@@ -5,8 +5,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "cross-env ENV=DEV nodemon netlify/functions/app.js",
-    "build": "cross-env ENV=PROD netlify deploy --dir=. --prod"
+    "dev": "cross-env ENV=DEV nodemon app.js",
+    "build": "cross-env ENV=PROD webpack",
+    "prod": "cross-env ENV=PROD node dist/server.js"
   },
   "author": "",
   "license": "ISC",
@@ -21,10 +22,7 @@
     "joi": "^17.12.3",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.5.0",
-    "multer": "^1.4.5-lts.1",
-    "netlify-cli": "^17.23.2",
-    "nodemon": "^3.1.0",
-    "serverless-http": "^3.2.0"
+    "multer": "^1.4.5-lts.1"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -33,6 +31,10 @@
     "@eslint/js": "^9.0.0",
     "cross-env": "^7.0.3",
     "eslint": "^9.0.0",
-    "globals": "^15.0.0"
+    "globals": "^15.0.0",
+    "nodemon": "^3.1.0",
+    "path": "^0.12.7",
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4"
   }
 }
