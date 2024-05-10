@@ -8,7 +8,9 @@ import axios, {AxiosInstance} from 'axios';
 import "./index.css";
 
 //Axios configuration
-let baseUrl: string = "http://localhost:3001";
+let baseUrl: string = "";
+if (import.meta.env.DEV) baseUrl = "http://localhost:3001/";
+if (import.meta.env.PROD) baseUrl = "https://hosstessback.netlify.app/";
 const token: string | null = localStorage.getItem("token");
 const Axios: AxiosInstance = axios.create({
   baseURL: baseUrl,

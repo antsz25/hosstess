@@ -8,7 +8,9 @@
     "back:dev": "cd backend && npm run dev",
     "front:dev": "cd frontend && npm run dev",
     "front:prod": "cd frontend && npm run build",
-    "dev": "npm-run-all --parallel back:dev front:dev"
+    "back:prod": "cd backend && npm run build",
+    "dev": "npm-run-all --parallel back:dev front:dev",
+    "prod": "npm-run-all --parallel back:prod front:prod"
   },
   "keywords": [],
   "author": "",
