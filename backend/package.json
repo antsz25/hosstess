@@ -6,8 +6,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "cross-env ENV=DEV nodemon functions/app.js",
-    "build": "cross-env ENV=PROD netlify deploy --prod",
-    "start": "node functions/app.js"
+    "build": "cross-env ENV=PROD netlify deploy --dir=. --prod"
   },
   "author": "",
   "license": "ISC",
