@@ -15,7 +15,8 @@ app.use(bodyParser.json());
 app.use(compression());
 let corsoptions = require('../../configurations/cors.configuration');
 app.options(cors(corsoptions));
-app.set("trust proxy", 1);
+app.use(cors(corsoptions));
+//app.set("trust proxy", 1);
 
 //Routes
 app.use('/usuarios', require('../../routers/usuarios.router'));
