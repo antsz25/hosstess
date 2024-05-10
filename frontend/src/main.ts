@@ -9,14 +9,16 @@ import "./index.css";
 
 //Axios configuration
 let baseUrl: string = "";
-if (import.meta.env.DEV) baseUrl = "http://localhost:3001/";
-if (import.meta.env.PROD) baseUrl = "https://hosstessback.netlify.app/";
+let frontUrl: string = "";
+if (import.meta.env.DEV) {baseUrl = "http://localhost:3001/"; frontUrl = "http://localhost:5173";}
+if (import.meta.env.PROD) {baseUrl = "https://hosstessback.netlify.app/"; frontUrl = "https://hosstess.netlify.app/";}
 const token: string | null = localStorage.getItem("token");
 const Axios: AxiosInstance = axios.create({
   baseURL: baseUrl,
   headers: {
-    "Content-Type": "multipart/form-data",
-    "Access-Control-Allow-Origin": "*",
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": frontUrl,
+    "Access-Control-Allow-Credentials": "true",
   },
   withCredentials: true,
 });
