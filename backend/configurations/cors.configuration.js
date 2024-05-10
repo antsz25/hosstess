@@ -2,7 +2,7 @@ let corsOptions = {};
 
 if (process.env.ENV === "PROD") {
   corsOptions = {
-    origin: /https\:\/\/hosstess\.netlify\.app\/*$/,
+    origin: /https\:\/\/hosstess\.netlify\.app\/main$/,
     credentials: true,
   };
 }

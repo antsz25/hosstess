@@ -14,7 +14,7 @@ app.use(RateLimit({
 app.use(bodyParser.json());
 app.use(compression());
 let corsoptions = require('../configurations/cors.configuration');
-app.use(cors(corsoptions));
+app.options(cors(corsoptions));
 app.set("trust proxy", 1);
 
 //Routes
