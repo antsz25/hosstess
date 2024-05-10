@@ -10,7 +10,7 @@ import "./index.css";
 //Axios configuration
 let baseUrl: string = "";
 if (import.meta.env.DEV) {baseUrl = "http://localhost:3001/";}
-if (import.meta.env.PROD) {baseUrl = "http://hosstessback.netlify.app:3001/";}
+if (import.meta.env.PROD) {baseUrl = "https://hosstessback.netlify.app/";}
 const token: string | null = localStorage.getItem("token");
 const Axios: AxiosInstance = axios.create({
   baseURL: baseUrl,

@@ -5,7 +5,6 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const compression = require('compression');
 const RateLimit = require('express-rate-limit');
-const server = require('http').createServer(app);
 const serverless = require('serverless-http');
 //Initial configuration
 app.use(RateLimit({
@@ -19,8 +18,6 @@ let corsoptions = require('../../configurations/cors.configuration');
 app.use(cors(corsoptions));
 
 //Routes
-app.use('/usuarios', require('../../routers/usuarios.router'));
-app.use('/mesas', require('../../routers/mesas.router'));
-server.listen(process.env.PORT, () => {
-    console.log(`Server running on port ${process.env.PORT}`);
-});
+app.use('/.netlify/functions/usuarios', require('../../routers/usuarios.router'));
+app.use('/.netlify/functions/mesas', require('../../routers/mesas.router'));
+module.exports.handler = serverless(app);
