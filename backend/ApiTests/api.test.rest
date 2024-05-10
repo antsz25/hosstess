@@ -20,4 +20,4 @@ content-type:application/json
 }
 ###
 //GET MESAS
-GET http://localhost:3001/mesas/all HTTP/1.1
+GET http://3.85.19.73:3001/mesas/ HTTP/1.1
