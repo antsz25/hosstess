@@ -10,7 +10,7 @@ import "./index.css";
 //Axios configuration
 let baseUrl: string = "";
 if (import.meta.env.DEV) {baseUrl = "http://localhost:3001/";}
-if (import.meta.env.PROD) {baseUrl = "http://3.85.19.73/";}
+if (import.meta.env.PROD) {baseUrl = import.meta.env.URL;}
 const token: string | null = localStorage.getItem("token");
 const Axios: AxiosInstance = axios.create({
   baseURL: baseUrl,

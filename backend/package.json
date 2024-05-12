@@ -5,9 +5,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "cross-env ENV=DEV nodemon app.js",
-    "build": "cross-env ENV=PROD webpack",
-    "prod": "cross-env ENV=PROD node dist/server.js"
+    "dev": "nodemon app.js",
+    "build": "webpack",
+    "prod": "node dist/server.js"
   },
   "author": "",
   "license": "ISC",
