@@ -8,12 +8,12 @@ import axios, {AxiosInstance} from 'axios';
 import "./index.css";
 
 //Axios configuration
-let baseUrl: string = "";
-if (import.meta.env.DEV) {baseUrl = "http://localhost:3001/";}
-if (import.meta.env.PROD) {baseUrl = import.meta.env.PUBLIC_URL;}
+let publicUrl: string = "";
+if (import.meta.env.DEV) {publicUrl = "http://localhost:3001/";}
+if (import.meta.env.PROD) {publicUrl = import.meta.env.VITE_PUBLIC_URL;}
 const token: string | null = localStorage.getItem("token");
 const Axios: AxiosInstance = axios.create({
-  baseURL: baseUrl,
+  baseURL: publicUrl,
   headers: {
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
