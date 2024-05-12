@@ -18,6 +18,7 @@ const Axios: AxiosInstance = axios.create({
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Credentials": "true",
+    "Authorization": token ? `Bearer ${token}` : null,
   },
   withCredentials: true,
 });
