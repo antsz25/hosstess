@@ -7,6 +7,7 @@ import * as directives from "vuetify/directives";
 import axios, {AxiosInstance} from 'axios';
 import "./index.css";
 
+
 //Axios configuration
 let publicUrl: string = "";
 if (import.meta.env.DEV) {publicUrl = "http://localhost:3001/";}
