@@ -13,8 +13,8 @@ router.post('/login',upload.none(),userController.LoginUsuario, (req,res)=>{
     const role = req.role;
     const token = req.token;
     switch(role){ // Logica para el renderizado del usuario
-        case "waiter":
-            return res.status(200).send({token: token, role: "waiter"});
+        case "hosstess":
+            return res.status(200).send({token: token, role: "hosstess"});
         case "admin":
             return res.status(200).send({token: token, role: "admin"});
     }

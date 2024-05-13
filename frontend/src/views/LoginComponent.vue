@@ -11,16 +11,16 @@
                 <div class="mb-4">
                     <label for="username" class="block text-sm font-medium text-gray-700">Usuario o correo electr&oacute;nico</label>
                     <input type="text" id="username" v-model="username" class="input-field"
-                        placeholder="Enter your username or email" required />
+                        placeholder="Ingresa tu usuario o correo electr&oacute;nico" required />
                 </div>
                 <div class="mb-4">
                     <label for="password" class="block text-sm font-medium text-gray-700">Contraseña</label>
                     <input type="password" id="password" v-model="password" class="input-field"
-                        placeholder="Enter your password" required />
+                        placeholder="Ingresa tu contraseña" required />
                 </div>
                 <button type="submit" @onClick="Ingresar"
                     class="w-full py-2 px-4 rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400">
-                    Log in
+                    Ingresar
                 </button>
                 <span v-if="error" class="text-center text-red-500 mt-4">Usuario o contraseña incorrectos</span>
             </form>

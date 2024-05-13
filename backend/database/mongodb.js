@@ -26,9 +26,6 @@ async function FindUserByUsername(username){
   const result = await dbConnection.collection("users").findOne({username: username});
   return result;
 }
-async function FindWaiters(){
-  return await dbConnection.collection("users").find({role: "waiter"}).toArray();
-}
 //Logica de Mesas
 async function AddMesa(data){
   const result = await dbConnection.collection("mesas").insertOne(data);
@@ -43,17 +40,66 @@ async function Getmesas(){
   return result;
 }
 async function GetMesaById(id){
-  const result = await dbConnection.collection("mesas").findOne({numero: id});
+  const result = await dbConnection.collection("mesas").findOne({numero: parseInt(id)});
   return result;
 }
 async function DeleteMesa(id){
-  const result = await dbConnection.collection("mesas").deleteOne({numero: id});
+  const result = await dbConnection.collection("mesas").deleteOne({numero: parseInt(id)});
   return result;
 }
 async function CloseMesas(){
   const result = await dbConnection.collection("mesas").updateMany({}, {$set: {disponible: false, personaTitular: null}});
   return result;
 }
+//Logica de meseros
+async function AddWaiter(data){
+  const result = await dbConnection.collection("waiters").insertOne(data);
+  return result;
+}
+async function GetWaiters(){
+  const result = await dbConnection.collection("waiters").find().toArray();
+  return result;
+}
+async function GetWaiterByCellphone(id){
+  const result = await dbConnection.collection("waiters").findOne({cellphone: parseInt(id)});
+  return result;
+}
+async function GetWaiterByDisponibility(disponibility){
+  const result = await dbConnection.collection("waiters").find({status: disponibility}).toArray();
+  return result;
+}
+async function DeleteWaiter(id){
+  const result = await dbConnection.collection("waiters").deleteOne({_id: ObjectId(id)});
+  return result;
+}
+async function UpdateWaiter(id,data){
+  const result = await dbConnection.collection("waiters").updateOne({cellphone: parseInt(id)}, {$set: data});
+  return result;
+}
+//Logica de WaitList
+async function AddWaitList(data){
+  const result = await dbConnection.collection("waitlist").insertOne(data);
+  return result;
+}
+async function GetWaitList(){
+  const result = await dbConnection.collection("waitlist").find().toArray();
+  return result;
+}
+async function GetWaitListByNumber(number){
+  const result = await dbConnection.collection("waitlist").findOne({cellphone: parseInt(number)});
+  return result;
+}
+async function DeleteWaitList(id){
+  const result = await dbConnection.collection("waitlist").deleteOne({cellphone: parseInt(number)});
+  return result;
+}
+async function UpdateWaitList(id,data){
+  const result = await dbConnection.collection("waitlist").updateOne({cellphone: parseInt(number)}, {$set: data});
+  return result;
+}
+
+
+
 module.exports = {
     CreateUser,
     FindUserByEmail,
@@ -65,5 +111,17 @@ module.exports = {
     DeleteMesa,
     CloseMesas,
     FindUserByUsername,
-    FindWaiters
+    FindWaiters,
+    AddWaiter,
+    GetWaiters,
+    GetWaiterByCellphone,
+    GetWaiterByDisponibility,
+    DeleteWaiter,
+    UpdateWaiter,
+    AddWaitList,
+    GetWaitList,
+    GetWaitListByNumber,
+    DeleteWaitList,
+    UpdateWaitList
+
 };

@@ -37,15 +37,4 @@ jobs:
           username: "ubuntu"
           source: "backend/dist/server.js"
           target: "/home/ubuntu/minuta"
-
-      - name: executing remote ssh commands using password
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.HOST }}
-          key: ${{ secrets.KEY}}
-          username: "ubuntu"
-          script: |
-            cd /home/ubuntu/minuta
-            kill -9 $(lsof -t -i:3001)
-            /home/ubuntu/.nvm/versions/node/v18.18.0/bin/node backend/dist/server.js
             

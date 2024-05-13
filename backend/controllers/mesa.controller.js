@@ -4,7 +4,6 @@ const service = require('../services/mesa.service');
 const AddMesa = async(req,res)=>{
     try{
         let {error, value} = schema.validate(req.body);
-        console.log(req);
         if(error){
             return res.status(400).send(error);
         }

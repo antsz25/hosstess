@@ -2,8 +2,8 @@
     <div class="relative min-h-screen flex items-center justify-center">
         <!-- Fondo con imagen y opacidad -->
         <div class="absolute inset-0 bg-cover bg-center"
-            style="background-image: url('https://i.imgur.com/xHIWOer.png'); filter: brightness(80%);"></div>
-
+            style="background-image: url('https://i.imgur.com/xHIWOer.png'); filter: brightness(80%);">
+        </div>
         <!-- Contenedor principal -->
         <div class="z-10 max-w-md w-full bg-white bg-opacity-90 shadow-lg rounded-lg overflow-hidden p-8">
             <h2 class="text-3xl font-semibold text-center text-red-600 mb-6">Registro</h2>
@@ -27,10 +27,12 @@
                     :on-change="validateNum" required />         
                     <label v-if="formatCellphoneError" for="cellphone" class="block text-sm font-medium text-red-700">Formato de n&uacute;mero incorrecto</label>
                 </div>
+                <!--
                 <div>
                     <label for="birthdate" class="block text-sm font-medium text-gray-700">Fecha de Nacimiento</label>
                     <input type="date" id="birthdate" v-model="birthdate" class="input-field" required />
                 </div>
+                -->
                 <div>
                     <label for="username" class="block text-sm font-medium text-gray-700">Usuario</label>
                     <input type="text" id="username" v-model="username" class="input-field" placeholder="Usuario"
@@ -53,6 +55,7 @@
                         placeholder="Confirmar Contraseña" required />
                     <label v-if="differentsPassword" for="cellphone" class="block text-sm font-medium text-red-700">Las contraseñas no coinciden</label>
                 </div>
+                <!--
                 <div>
                     <label for="role" class="block text-sm font-medium text-gray-700">Puesto</label>
                     <select id="role" v-model="role" class="input-field" required>
@@ -68,6 +71,7 @@
                         <option value="evening">Noche (4pm - 12am)</option>
                     </select>
                 </div>
+                -->
                 <!-- Botón de registro -->
                 <button type="submit"
                     class="w-full py-2 px-4 rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400">
@@ -92,7 +96,6 @@ export default {
         return {
             firstName: '',
             lastName: '',
-            birthdate: '',
             cellphone: '',
             username: '',
             email: '',
@@ -100,9 +103,8 @@ export default {
             formatCellphoneError: false,
             confirmPassword: '',
             differentsPassword: false,
-            confirmRequest: false,
-            role: 'waiter', // Valor predeterminado: mesero
-            workSchedule: 'morning' // Valor predeterminado: mañana
+            confirmRequest: false, //Comprueba el estado de la peticion de registro
+            role: 'hosstess', // Valor predeterminado: mesero
         };
     },
     computed:{
@@ -167,10 +169,6 @@ export default {
             }catch(error){
                 console.log(error);
             }
-            // Por ejemplo, puedes enviar una solicitud HTTP para guardar los datos del usuario en la base de datos
-
-            // Redirigir al usuario a la página de inicio de sesión después del registro (opcional)
-            /*this.$router.push('/login');*/
         }
     }
 };

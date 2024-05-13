@@ -28,8 +28,8 @@
                 <span v-if="mesa.disponible" class="bg-green-500 px-2 py-1 text-white rounded-full">Libre</span>
                 <span v-else class="bg-red-500 px-2 py-1 text-white rounded-full">Ocupada</span>
               </p>
+              <p class="mt-1 text-base text-gray-700">Mesero: {{ mesa.mesero ? mesa.mesero : 'Sin asignar' }}</p>
               <p class="mt-1 text-base text-gray-700">Titular: {{ mesa.personaTitular ? mesa.personaTitular : 'Sin asignar' }}</p>
-              <p v-if="!mesa.disponible" class="mt-1 text-base text-gray-700">{{ formatTime(mesa.tiempoOcupada) }}</p>
             </div>
             <button @click="eliminarMesa(mesa)"
               class="absolute top-2 right-2 text-red-500 hover:text-red-700 focus:outline-none">
@@ -88,7 +88,6 @@
 import Navbar from '../components/Sidebar.vue';
 import { ref, onMounted } from 'vue';
 import Axios from '../main.ts';
-
 const mesas = ref([]);
 const modalActivo = ref(false);
 const modalAgregarMesa = ref(false);
@@ -111,6 +110,7 @@ async function refillMesas() {
 async function agregarNuevaMesa() {
   try {
     const nuevaMesa = {
+      numero: mesas.value.length + 1, // Asignar número de mesa automáticamente
       nombre: nombreNuevaMesa.value,
       capacidad: capacidadNuevaMesa.value,
       disponible: true // Nueva mesa se agrega como disponible por defecto
@@ -139,8 +139,13 @@ function mostrarModalGestionarMesa(mesa) {
 async function ocuparMesa() {
   try {
     if (mesaSeleccionada.value) {
+      const request = {
+              disponible: false,
+              mesero: 'Mesero de Prueba', //Hacer fetch al primer mesero que se encuentre disponible
+              personaTitular: 'Persona de Prueba' //Hacer fetch a la primera persona que se encuentre en lista de espera
+      };
       const numeroMesa = mesaSeleccionada.value.numero;
-      await Axios.put(`/mesas/change/${numeroMesa}`, { disponible: false });
+      await Axios.put(`/mesas/change/${numeroMesa}`, request);
       mesas.value = await refillMesas(); // Actualizar lista de mesas
       cerrarMesa(); // Cerrar modal de gestión de mesa
     }
@@ -165,11 +170,11 @@ async function desocuparMesa() {
 async function eliminarMesa(mesa) {
   try {
     const numeroMesa = mesa.numero;
-    // Asumiendo que el backend tiene un endpoint DELETE para eliminar la mesa
-    await Axios.delete(`/mesas/change/${numeroMesa}`);
+    await Axios.delete(`/mesas/delete/${numeroMesa}`);
     mesas.value = mesas.value.filter((m) => m.numero !== numeroMesa); // Eliminar la mesa de la lista local
   } catch (error) {
     console.error('Error al eliminar mesa:', error);
+    alert('Error al eliminar mesa, por favor intente de nuevo.')
   }
 }
 
