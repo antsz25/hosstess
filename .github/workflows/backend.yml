@@ -25,10 +25,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18.x'
-      - working-directory: ./backend
+      - working-directory: ./
         run: |
           npm ci
-          npm run build
+          npm run back:prod
             
       - name: copy file via ssh password
         uses: appleboy/scp-action@v0.1.7
