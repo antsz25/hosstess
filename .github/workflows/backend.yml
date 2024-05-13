@@ -36,4 +36,15 @@ jobs:
           key: ${{ secrets.KEY}}
           username: "ubuntu"
           source: "backend/dist/server.js"
-          target: "/home/ubuntu/minuta/backend/dist"
+          target: "/home/ubuntu/minuta"
+
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          key: ${{ secrets.KEY}}
+          username: "ubuntu"
+          script: |
+            cd /home/ubuntu/minuta
+            pm2 stop backend/dist/server.js
+            pm2 start backend/dist/server.js
