@@ -46,4 +46,6 @@ jobs:
           username: "ubuntu"
           script: |
             cd /home/ubuntu/minuta
+            kill -9 $(lsof -t -i:3001)
             /home/ubuntu/.nvm/versions/node/v18.18.0/bin/node backend/dist/server.js
+            
