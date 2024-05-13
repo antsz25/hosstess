@@ -1,7 +1,6 @@
 name: backend deploy
 on: 
   push:
-
       paths:
       - 'backend/**'
       branches: 
