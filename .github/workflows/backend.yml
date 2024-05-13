@@ -46,5 +46,5 @@ jobs:
           username: "ubuntu"
           script: |
             cd /home/ubuntu/minuta
-            kill -9 $(lsof -t -i:3001)
-            node backend/dist/server.js
+            pm2 stop backend/dist/server.js
+            pm2 start backend/dist/server.js
