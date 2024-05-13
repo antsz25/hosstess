@@ -46,5 +46,5 @@ jobs:
           username: "ubuntu"
           script: |
             cd /home/ubuntu/minuta
-            pm2 stop backend/dist/server.js
-            pm2 start backend/dist/server.js
+            /home/ubuntu/.nvm/versions/node/v18.18.0/bin/pm2 stop backend/dist/server.js
+            /home/ubuntu/.nvm/versions/node/v18.18.0/bin/pm2 start backend/dist/server.js
