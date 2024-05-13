@@ -41,6 +41,7 @@ const GetWaiterByCellphone = async(req,res)=>{
 const GetWaiterByDisponibility = async(req,res)=>{
     try{
         let result = await service.GetWaiterByDisponibility(req.params.disponibility);
+        console.log(req.params.disponibility);
         if(!result){
             return res.status(404).send("Mesero no encontrado");
         }
@@ -56,7 +57,7 @@ const DeleteWaiter = async(req,res)=>{
         if(!result){
             return res.status(404).send("Mesero no encontrado");
         }
-        return res.status(200).send("Mesero eliminado");
+        return res.status(200).send(result);
     }catch(err){
         console.error(err.message);
         return res.status(500).send(err.message);

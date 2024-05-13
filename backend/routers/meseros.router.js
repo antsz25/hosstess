@@ -6,7 +6,7 @@ const meseroController = require('../controllers/mesero.controller');
 //GET
 router.get('/',upload.none(), meseroController.GetWaiters);
 router.get('/:cellphone',upload.none(), meseroController.GetWaiterByCellphone);
-router.get('/:disponibility',upload.none(), meseroController.GetWaiterByDisponibility);
+router.get('/dispon/:disponibility',upload.none(), meseroController.GetWaiterByDisponibility);
 //POST
 router.post('/add',upload.none(), meseroController.AddWaiter);
 //PUT

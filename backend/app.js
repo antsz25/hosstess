@@ -7,10 +7,10 @@ const compression = require('compression');
 const RateLimit = require('express-rate-limit');
 const server = require("http").createServer(app);
 //Initial configuration
-app.use(RateLimit({
+/*app.use(RateLimit({
     windowMs: 1*60*1000, // 1 minute
     max:50, // 20 requests per minute
-}));
+}));*/
 app.set("trust proxy", 1);
 app.use(bodyParser.json());
 app.use(compression());

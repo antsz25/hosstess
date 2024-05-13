@@ -139,11 +139,14 @@ function mostrarModalGestionarMesa(mesa) {
 async function ocuparMesa() {
   try {
     if (mesaSeleccionada.value) {
+      const get = await Axios.get(`/waiters/dispon/${"active"}`);
+      const mesero = get.data;
       const request = {
               disponible: false,
-              mesero: 'Mesero de Prueba', //Hacer fetch al primer mesero que se encuentre disponible
+              mesero: `${mesero.name} ${mesero.lastName}`, //Hacer fetch al primer mesero que se encuentre disponible
               personaTitular: 'Persona de Prueba' //Hacer fetch a la primera persona que se encuentre en lista de espera
       };
+      const change = await Axios.put(`/waiters/${mesero.cellphone}`,{status: "attending"})
       const numeroMesa = mesaSeleccionada.value.numero;
       await Axios.put(`/mesas/change/${numeroMesa}`, request);
       mesas.value = await refillMesas(); // Actualizar lista de mesas
@@ -158,6 +161,7 @@ async function desocuparMesa() {
   try {
     if (mesaSeleccionada.value) {
       const numeroMesa = mesaSeleccionada.value.numero;
+      await Axios.put(`/waiters/${mesaSeleccionada.value.mesero}`,{status: "active"});
       await Axios.put(`/mesas/change/${numeroMesa}`, { disponible: true });
       mesas.value = await refillMesas(); // Actualizar lista de mesas
       cerrarMesa(); // Cerrar modal de gestión de mesa

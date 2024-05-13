@@ -65,11 +65,11 @@ async function GetWaiterByCellphone(id){
   return result;
 }
 async function GetWaiterByDisponibility(disponibility){
-  const result = await dbConnection.collection("waiters").find({status: disponibility}).toArray();
+  const result = await dbConnection.collection("waiters").findOne({status: disponibility});
   return result;
 }
 async function DeleteWaiter(id){
-  const result = await dbConnection.collection("waiters").deleteOne({_id: ObjectId(id)});
+  const result = await dbConnection.collection("waiters").deleteOne({cellphone: String(id)});
   return result;
 }
 async function UpdateWaiter(id,data){
@@ -111,7 +111,6 @@ module.exports = {
     DeleteMesa,
     CloseMesas,
     FindUserByUsername,
-    FindWaiters,
     AddWaiter,
     GetWaiters,
     GetWaiterByCellphone,

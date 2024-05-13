@@ -25,15 +25,18 @@
         <div v-for="mesero in meseros" :key="mesero.id" class="bg-white rounded-lg shadow-md p-4">
           <h3 class="font-semibold text-lg text-red-500">{{ mesero.nombre }}</h3>
           <p class="mt-2 text-base text-gray-700">Edad: {{ mesero.edad }}</p>
+          <p class="mt-1 text-base text-gray-700">Celular: {{ mesero.celular }}</p>
+          <p v-if="mesero.estado == 'Ocupado'" class="mt-1 text-base text-gray-700">mesa: {{ mesero.mesa }}</p>
           <p class="mt-1 text-base text-gray-700">Turno: {{ mesero.turno }}</p>
           <p class="mt-1 text-base text-gray-700">Estado: 
             <span :class="{
-              'bg-green-500 text-white py-1 px-2 rounded': calcularEstadoMesero(mesero) === 'Disponible',
-              'bg-yellow-500 text-white py-1 px-2 rounded': calcularEstadoMesero(mesero) === 'Ocupado',
-              'bg-gray-500 text-white py-1 px-2 rounded': calcularEstadoMesero(mesero) === 'No trabajando'
-            }">{{ calcularEstadoMesero(mesero) }}</span>
+              'bg-green-500 text-white py-1 px-2 rounded': mesero.estado === 'Disponible',
+              'bg-yellow-500 text-white py-1 px-2 rounded': mesero.estado === 'Ocupado',
+              'bg-gray-500 text-white py-1 px-2 rounded': mesero.estado === 'Descanso',
+              'bg-gray-800 text-white py-1 px-2 rounded': mesero.estado === 'Inactivo'
+            }">{{ mesero.estado }}</span>
           </p>
-          <button @click="eliminarMesero(mesero.id)"
+          <button @click="eliminarMesero(mesero.celular)"
             class="mt-2 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 focus:outline-none">
             Eliminar
           </button>
@@ -47,8 +50,12 @@
           <form @submit.prevent="agregarMesero" class="space-y-4">
             <input v-model="nuevoMesero.nombre" type="text" class="w-full px-3 py-2 border rounded-md"
               placeholder="Nombre">
-            <input v-model.number="nuevoMesero.edad" type="number" class="w-full px-3 py-2 border rounded-md"
-              placeholder="Edad">
+            <input v-model="nuevoMesero.apellido" type="text" class="w-full px-3 py-2 border rounded-md"
+              placeholder="Apellido">
+            <input v-model.date="nuevoMesero.edad" type="date" class="w-full px-3 py-2 border rounded-md"
+              placeholder="Fecha de nacimiento">
+            <input v-model="nuevoMesero.celular" type="text" class="w-full px-3 py-2 border rounded-md"
+              placeholder="Celular">
             <!-- Menú desplegable para seleccionar el turno -->
             <select v-model="nuevoMesero.turno" class="w-full px-3 py-2 border rounded-md">
               <option value="">Seleccionar Turno</option>
@@ -71,6 +78,7 @@
 </template>
 
 <script>
+import { ref } from 'vue';
 import Navbar from '../components/Sidebar.vue';
 import Axios from '../main.ts';
 
@@ -78,32 +86,78 @@ export default {
   components: {
     Navbar,
   },
-  data() {
-    return {
-      meseros: [
-        { id: 1, nombre: 'Juan', edad: 25, turno: 'Mañana' },
-        { id: 2, nombre: 'María', edad: 30, turno: 'Tarde' },
-        { id: 3, nombre: 'Pedro', edad: 28, turno: 'Noche' },
-      ],
+  setup() {
+    return { 
+      meseros: ref([]),
       nuevoMesero: {
         nombre: '',
+        apellido: '',
         edad: null,
+        celular: null,
         turno: ''
       },
-      mostrandoModal: false
+      mostrandoModal: ref(false)
     };
   },
-  computed: {
-    // Función computada para determinar el estado de un mesero en base a la hora local
-    calcularEstadoMesero() {
-      return (mesero) => {
-        const horaActual = new Date().getHours(); // Obtiene la hora actual del sistema
-        const turnoInicio = this.obtenerHoraTurno(mesero.turno); // Obtiene la hora de inicio del turno del mesero
-        const turnoFin = turnoInicio + 8; // Se asume que el turno dura 8 horas
-      };
+  async mounted(){
+    try{
+      const result = await Axios.get('waiters/');
+      let mesero = result.data;
+      let array = [];
+      let status = "";
+      mesero.forEach(element => {
+        let turno = "";
+        switch(element.workSchedule){
+          case "morning":
+            turno =  "Mañana";
+          case "afternoon":
+            turno = "Tarde";
+          case "evening":
+            turno = "Noche";
+        }
+        status = this.calcularEstadoMesero(element);
+        let mesa = "";
+        array.push({
+          id: element._id,
+          nombre: `${element.name} ${element.lastName}`,
+          edad: this.getAge(element.birthDate),
+          celular: element.cellphone,
+          mesa: element.mesa,
+          turno: turno,
+          estado: status
+        });
+      });
+      this.meseros = array;
+    }catch(err){
+      console.error(err.message);
     }
   },
   methods: {
+    getAge(birthDate){
+        let today = new Date();
+        let birth = new Date(birthDate);
+        let age = today.getFullYear() - birth.getFullYear();
+        var month = today.getMonth() - birth.getMonth();
+        if(month <0 || (month === 0 && today.getDate() < birth.getDate())){
+          return age --;
+        } 
+        return age;
+    },
+    calcularEstadoMesero(mesero) {
+      const horaActual = new Date().getHours(); // Obtiene la hora actual del sistema
+      const turnoInicio = this.obtenerHoraTurno(mesero.workSchedule); // Obtiene la hora de inicio del turno del mesero    
+      const turnoFin = turnoInicio + 8; // Se asume que el turno dura 8 horas
+      if (horaActual >= turnoInicio && horaActual < turnoFin) {
+        return 'Disponible';
+      } else if (mesero.status === 'rest') {
+        return 'Descanso';
+      } 
+      else if(mesero.status === 'inactive'){
+        return 'Inactivo';
+      }else if(mesero.mesa != 0) {
+        return 'Ocupado';
+      }
+    },
     mostrarModal() {
       this.mostrandoModal = true;
     },
@@ -116,37 +170,66 @@ export default {
       this.nuevoMesero.edad = null;
       this.nuevoMesero.turno = '';
     },
-    agregarMesero() {
-      if (this.nuevoMesero.nombre && this.nuevoMesero.edad && this.nuevoMesero.turno) {
-        const newId = this.meseros.length > 0 ? this.meseros[this.meseros.length - 1].id + 1 : 1;
+    async agregarMesero() {
+      if (this.nuevoMesero.nombre && this.nuevoMesero.apellido && this.nuevoMesero.edad && this.nuevoMesero.turno && this.nuevoMesero.celular) {
+        let workSchedule = "";
+        switch(this.nuevoMesero.turno){
+          case "Mañana":
+            workSchedule = "morning";
+          case "Tarde":
+            workSchedule = "afternoon";
+          case "Noche":
+            workSchedule = "evening";
+        }
+        const result = await Axios.post('/waiters/add',{
+          name: this.nuevoMesero.nombre,
+          lastName: this.nuevoMesero.apellido,
+          birthDate: this.nuevoMesero.edad,
+          cellphone: this.nuevoMesero.celular,
+          workSchedule: workSchedule,
+          role: "waiter",
+        })
         this.meseros.push({
-          id: newId,
-          nombre: this.nuevoMesero.nombre,
-          edad: this.nuevoMesero.edad,
-          turno: this.nuevoMesero.turno
+          nombre: this.nuevoMesero.nombre + " " + this.nuevoMesero.apellido,
+          edad: this.getAge(this.nuevoMesero.edad),
+          celular: this.nuevoMesero.celular,
+          mesa: 0,
+          turno: this.nuevoMesero.turno,
+          estado: 'Descanso'
         });
         this.cerrarModal();
-      } else {
+      }
+      else {
         alert('Por favor complete todos los campos.');
       }
     },
-    eliminarMesero(id) {
-      const index = this.meseros.findIndex(m => m.id === id);
-      if (index !== -1) {
-        this.meseros.splice(index, 1);
+    async eliminarMesero(id) {
+      try{
+        const result = await Axios.delete(`/waiters/${id}`)
+        if(result.status == 200){
+          const index = this.meseros.indexOf(this.meseros.find(mesero => mesero.celular === id));
+          if (index !== -1) {
+            this.meseros.splice(index, 1);
+          }
+          alert("Mesero eliminado correctamente");
+        }
+      }catch(err){
+        console.error(err.message);
       }
     },
     // Función para obtener la hora de inicio del turno en base al nombre del turno
     obtenerHoraTurno(turno) {
-      switch (turno.toLowerCase()) {
-        case 'mañana':
-          return 8; // Turno de mañana empieza a las 8 AM
-        case 'tarde':
-          return 16; // Turno de tarde empieza a las 4 PM
-        case 'noche':
-          return 0; // Turno de noche empieza a las 12 AM
-        default:
-          return 0; // Por defecto, se asume turno de noche si no se reconoce el turno
+      if(turno != null){
+        switch (turno.toLowerCase()) {
+          case "morning":
+            return 8;
+          case "afternoon":
+            return 16;
+          case "evening":
+            return 0;
+          default:
+            return 0; // Por defecto, se asume turno de noche si no se reconoce el turno
+        }
       }
     }
   }

@@ -6,7 +6,6 @@ const userController = require('../controllers/user.controller');
 //REST
 //GET
 router.get('/find',upload.none(),userController.FindUserByEmail);
-router.get('/waiters/', upload.none(),userController.FindWaiters);
 //POST
 router.post('/register',upload.none(),userController.CreateUser);
 router.post('/login',upload.none(),userController.LoginUsuario, (req,res)=>{
@@ -19,10 +18,4 @@ router.post('/login',upload.none(),userController.LoginUsuario, (req,res)=>{
             return res.status(200).send({token: token, role: "admin"});
     }
 });
-/*
-//PUT
-router.put('/',upload.none());
-//DELETE
-router.delete('/',upload.none());
-*/
 module.exports = router;
