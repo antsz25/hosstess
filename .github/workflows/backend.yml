@@ -1,0 +1,40 @@
+name: backend deploy
+on: 
+  push:
+
+      paths:
+      - 'backend/**'
+      branches: 
+        - main
+env:
+    AWS_REGION: us-east-1
+
+    SECRET_KEY: ${{ secrets.SECRET_KEY }}
+    PORT: ${{ secrets.PORT }}
+    DATABASE_URI: ${{ secrets.DATABASE_URI }}
+    DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+
+jobs:
+    Testing:
+      runs-on: ubuntu-latest
+  
+      steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install dependencies
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+      - working-directory: ./backend
+        run: |
+          npm ci
+          npm run build
+            
+      - name: copy file via ssh password
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          key: ${{ secrets.KEY}}
+          username: "ubuntu"
+          source: "backend/dist/server.js"
+          target: "/home/ubuntu/minuta/backend/dist"

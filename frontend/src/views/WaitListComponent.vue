@@ -91,7 +91,8 @@
   <script setup>
   import Navbar from '../components/Sidebar.vue';
   import { ref } from 'vue';
-  
+  import Axios from '../main.ts';
+
   const clientesEnEspera = ref([]);
   const modalAgregarCliente = ref(false);
   const nombreNuevoCliente = ref('');

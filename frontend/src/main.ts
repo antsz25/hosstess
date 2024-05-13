@@ -23,6 +23,13 @@ const Axios: AxiosInstance = axios.create({
   withCredentials: true,
 });
 
+export async function CheckSession(){
+  if(await localStorage.getItem("token")){
+    return true;
+  }else{
+    return false;
+  }
+}
 export default Axios;
 
 // Importa tus componentes de Vue Router aquí

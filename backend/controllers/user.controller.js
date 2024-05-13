@@ -57,23 +57,7 @@ const LoginUsuario = async(req,res,next) =>{
         return res.status(500).send(error.message);
     }
 }
-//Encontrar a meseros
-const FindUserByRole = async(req,res)=>{
-    try{
-        if(req.params.role != "waiter"){ return;}
-        const search = await service.FindUserByRole(req.params.role);
-        if(search){
-            return res.status(200).send(search);
-        }
-        else{
-            return res.status(404).send("Meseros no encontrados");
-        }
-    }catch(err){
-        console.error(err);
-        return res.status(500).send(err);
-    }
-
-}
+//Encontrar a usuario por rol
 const FindUserByUsername = async(req,res)=>{
     try{
         const search = await service.FindUserByUsername(req.body.username);
@@ -89,10 +73,25 @@ const FindUserByUsername = async(req,res)=>{
     }
 
 }
+//Encontrar meseros
+const FindWaiters = async(req,res) =>{
+    try{
+        const search = await service.FindWaiters();
+        if(search){
+            return res.status(200).send(search);
+        }
+        else{
+            return res.status(404).send("No se encontraron meseros");
+        }
+    }catch(err){
+        console.error(err.message);
+        return res.status(500).send(err.message);  
+    }
+}
 module.exports ={
     CreateUser,
     FindUserByEmail,
     LoginUsuario,
-    FindUserByRole,
-    FindUserByUsername
+    FindUserByUsername,
+    FindWaiters
 };

@@ -22,13 +22,12 @@ async function LoginUsuario(data){
   if(find){return find}
   return null;
 }
-async function FindUserByRole(role){
-  const result = await dbConnection.collection("users").findOne({role});
-  return result;
-}
 async function FindUserByUsername(username){
   const result = await dbConnection.collection("users").findOne({username: username});
   return result;
+}
+async function FindWaiters(){
+  return await dbConnection.collection("users").find({role: "waiter"}).toArray();
 }
 //Logica de Mesas
 async function AddMesa(data){
@@ -65,6 +64,6 @@ module.exports = {
     GetMesaById,
     DeleteMesa,
     CloseMesas,
-    FindUserByRole,
-    FindUserByUsername
+    FindUserByUsername,
+    FindWaiters
 };

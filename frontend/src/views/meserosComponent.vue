@@ -72,6 +72,7 @@
 
 <script>
 import Navbar from '../components/Sidebar.vue';
+import Axios from '../main.ts';
 
 export default {
   components: {
@@ -82,7 +83,7 @@ export default {
       meseros: [
         { id: 1, nombre: 'Juan', edad: 25, turno: 'Mañana' },
         { id: 2, nombre: 'María', edad: 30, turno: 'Tarde' },
-        { id: 3, nombre: 'Pedro', edad: 28, turno: 'Noche' }
+        { id: 3, nombre: 'Pedro', edad: 28, turno: 'Noche' },
       ],
       nuevoMesero: {
         nombre: '',
@@ -98,14 +99,7 @@ export default {
       return (mesero) => {
         const horaActual = new Date().getHours(); // Obtiene la hora actual del sistema
         const turnoInicio = this.obtenerHoraTurno(mesero.turno); // Obtiene la hora de inicio del turno del mesero
-
-        if (horaActual >= turnoInicio && horaActual < turnoInicio + 8) {
-          return 'Ocupado'; // Si la hora actual está dentro del turno, el mesero está ocupado
-        } else if (horaActual >= turnoInicio - 1 && horaActual < turnoInicio + 1) {
-          return 'Disponible'; // Si la hora actual está cerca del inicio del turno, el mesero está disponible
-        } else {
-          return 'No trabajando'; // En cualquier otro caso, el mesero no está trabajando
-        }
+        const turnoFin = turnoInicio + 8; // Se asume que el turno dura 8 horas
       };
     }
   },

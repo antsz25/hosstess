@@ -18,9 +18,6 @@
         <li>
           <router-link to="/waitlist" class="sidebar-link">Lista de Espera</router-link>
         </li>
-        <li>
-          <router-link to="/mesas" class="sidebar-link">Mesas</router-link>
-        </li>
       </ul>
 
       <!-- Botón de logout -->
@@ -28,10 +25,16 @@
     </nav>
   </div>
 </template>
-
 <script>
+import { CheckSession } from '../main';
 export default {
   name: 'Sidebar',
+  async mounted(){
+    /*const session = await CheckSession();
+    if(!session){
+      this.$router.push('/');
+    }*/
+  },
   methods: {
     logout() {
       //Elimina la sesion del usuario

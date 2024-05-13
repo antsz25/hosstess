@@ -94,7 +94,6 @@ const modalActivo = ref(false);
 const modalAgregarMesa = ref(false);
 const nombreNuevaMesa = ref('');
 const capacidadNuevaMesa = ref('');
-
 onMounted(async () => {
   mesas.value = await refillMesas();
 });
