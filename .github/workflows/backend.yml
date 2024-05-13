@@ -27,7 +27,7 @@ jobs:
           node-version: '18.x'
       - working-directory: ./
         run: |
-          npm ci
+          npm install
           npm run back:prod
             
       - name: copy file via ssh password
