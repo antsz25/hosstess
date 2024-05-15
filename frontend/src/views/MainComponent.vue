@@ -189,10 +189,7 @@ function cerrarMesa() {
   mesaSeleccionada.value = null;
 }
 
-function formatTime(tiempoOcupada) {
-  // Lógica para formatear el tiempo ocupado, si es necesario
-  return tiempoOcupada;
-}
+
 </script>
 
 <style scoped>
