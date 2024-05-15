@@ -95,17 +95,17 @@ import Axios from '../main.ts'
 export default {
     data() {
         return {
-            firstName: 'Antonio',
-            lastName: 'Sanchez',
-            cellphone: '6644487456',
-            username: 'antsz',
-            email: 'antsz@gmail.com',
-            password: 'antsz123',
+            firstName: '',
+            lastName: '',
+            cellphone: '',
+            username: '',
+            email: '',
+            password: '',
             formatCellphoneError: false,
             confirmPassword: '',
             differentsPassword: false,
             confirmRequest: false, //Comprueba el estado de la peticion de registro,
-            Error: "Cachupala",
+            Error: "",
             onError: false,
         };
     },
