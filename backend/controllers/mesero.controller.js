@@ -41,7 +41,6 @@ const GetWaiterByCellphone = async(req,res)=>{
 const GetWaiterByDisponibility = async(req,res)=>{
     try{
         let result = await service.GetWaiterByDisponibility(req.params.disponibility);
-        console.log(req.params.disponibility);
         if(!result){
             return res.status(404).send("Mesero no encontrado");
         }

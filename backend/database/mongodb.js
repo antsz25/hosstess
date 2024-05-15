@@ -73,7 +73,7 @@ async function DeleteWaiter(id){
   return result;
 }
 async function UpdateWaiter(id,data){
-  const result = await dbConnection.collection("waiters").updateOne({cellphone: parseInt(id)}, {$set: data});
+  const result = await dbConnection.collection("waiters").updateOne({cellphone: String(id)}, {$set: data});
   return result;
 }
 //Logica de WaitList
