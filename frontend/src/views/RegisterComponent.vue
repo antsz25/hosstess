@@ -80,6 +80,7 @@
                 <router-link v-if="confirmRequest" to="/" class="block text-center text-base text-green-700 underline mt-4 hover:text-gray-800">
                     Registro exitoso. Da clic aqu&iacute; para iniciar sesi&oacute;n
                 </router-link>
+                <p v-if="onError" class="block text-center text-base text-red-700 mt-4">{{ this.Error }}</p>
                 <!-- Enlace a la página de inicio de sesión -->
                 <router-link to="/" class="block text-center text-sm text-gray-600 mt-4 hover:text-gray-800">
                     ¿Ya tienes cuenta? Iniciar sesión
@@ -94,17 +95,18 @@ import Axios from '../main.ts'
 export default {
     data() {
         return {
-            firstName: '',
-            lastName: '',
-            cellphone: '',
-            username: '',
-            email: '',
-            password: '',
+            firstName: 'Antonio',
+            lastName: 'Sanchez',
+            cellphone: '6644487456',
+            username: 'antsz',
+            email: 'antsz@gmail.com',
+            password: 'antsz123',
             formatCellphoneError: false,
             confirmPassword: '',
             differentsPassword: false,
-            confirmRequest: false, //Comprueba el estado de la peticion de registro
-            role: 'hosstess', // Valor predeterminado: mesero
+            confirmRequest: false, //Comprueba el estado de la peticion de registro,
+            Error: "Cachupala",
+            onError: false,
         };
     },
     computed:{
@@ -159,15 +161,16 @@ export default {
                     username: this.username,
                     password: this.password,
                     cellphone: num,
-                })
+                }).catch(error => {
+                    this.onError = true;
+                    this.Error = error.response.data;
+                    throw new Error("Error al registrar: "+ error.response.data);
+                });
                 if(request.status == 201){
                     this.confirmRequest = true;
                 }
-                else{
-                    throw new Error("Error al registrar: ", request.data.message);
-                }
             }catch(error){
-                console.log(error);
+                console.error(error);
             }
         }
     }

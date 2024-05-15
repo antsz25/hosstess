@@ -9,6 +9,9 @@ const CreateUser = async (req, res)=>{
         if(error){
             return res.status(400).send(error.message);
         }
+        if(await service.FindUserByUsername(value.username)){
+            return res.status(400).send("Usuario con el nombre de usuario ya registrado");
+        }
         if(await service.FindUserByEmail(value.email)){
             return res.status(400).send("Usuario con el correo ya registrado");
         }
