@@ -16,12 +16,23 @@ async function FindWaiters(){
 async function FindUserByUsername(username){
     return await db.FindUserByUsername(username);
 }
-
+async function AddWaitList(data){
+    return await db.AddWaitList(data);
+}
+async function DeleteWaitList(id){
+    return await db.DeleteWaitList(id);
+}
+async function GetWaitList(){
+    return await db.GetWaitList();
+}
 
 module.exports = {
     CreateUser,
     FindUserByEmail,
     LoginUsuario,
     FindUserByUsername,
-    FindWaiters
+    FindWaiters,
+    AddWaitList,
+    DeleteWaitList,
+    GetWaitList
 }

@@ -1,6 +1,7 @@
 const schema = require('../models/usuario.model');
 const service = require('../services/usuario.service');
 const hasher = require('../utils/bcrypt.utils');
+const waitlist = require('../models/waitlist.model');
 const jwtCreator = require('../utils/jwt.utils');
 //Creacion del usuario
 const CreateUser = async (req, res)=>{
@@ -91,10 +92,45 @@ const FindWaiters = async(req,res) =>{
         return res.status(500).send(err.message);  
     }
 }
+
+const GetWaitList = async(req,res) =>{
+    try{
+        const Search = await service.GetWaitList();
+        return res.status(200).send(Search);
+    }catch(exp){
+        console.error(exp.message);
+        return res.status(500).send(exp);
+    }
+}
+const DeleteWaitList = async(req,res) =>{
+    try{
+        const result = await service.DeleteWaitList(req.params.id);
+        return res.status(200).send(result);
+    }catch(exp){
+        console.error(exp.message);
+        return res.status(500).send(exp);
+    }
+}
+const AddWaitList = async(req,res) =>{
+    try{
+        let {error, value} = waitlist.validate(req.body);
+        if(error){
+            return res.status(400).send(error.message);
+        }
+        await service.AddWaitList(value);
+        return res.status(200).send("Añadido a la wait list");
+    }catch(exp){
+        console.error(exp.message);
+        return res.status(500).send(exp);
+    }
+}
 module.exports ={
     CreateUser,
     FindUserByEmail,
     LoginUsuario,
     FindUserByUsername,
-    FindWaiters
+    FindWaiters,
+    GetWaitList,
+    DeleteWaitList,
+    AddWaitList
 };

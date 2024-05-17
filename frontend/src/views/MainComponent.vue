@@ -28,7 +28,7 @@
                 <span v-if="mesa.disponible" class="bg-green-500 px-2 py-1 text-white rounded-full">Libre</span>
                 <span v-else class="bg-red-500 px-2 py-1 text-white rounded-full">Ocupada</span>
               </p>
-              <p class="mt-1 text-base text-gray-700">Mesero: {{ mesa.mesero ? mesa.mesero.nombre : 'Sin asignar' }}</p>
+              <p class="mt-1 text-base text-gray-700">Mesero: {{ mesa.mesero ? `${mesa.mesero.name} ${mesa.mesero.lastName}` : 'Sin asignar' }}</p>
               <p class="mt-1 text-base text-gray-700">Titular: {{ mesa.personaTitular ? mesa.personaTitular : 'Sin asignar' }}</p>
             </div>
             <button @click="eliminarMesa(mesa)"
@@ -169,14 +169,9 @@ function mostrarModalGestionarMesa(mesa) {
 async function ocuparMesa() {
   try {
     if (mesaSeleccionada.value) {
-      const get = await Axios.get(`/waiters/dispon/${"active"}`).catch((error) => {alert('No se encuentran meseros disponibles');throw new Error('No se encuentran meseros disponibles');});
-      const mesero = get.data;
-      await Axios.put(`/waiters/${mesero.cellphone}`,{status: "attending"}).catch((error) => console.error('Error al ocupar mesa:', error));
       const numeroMesa = mesaSeleccionada.value.numero;
       const request = {
               disponible: false,
-              mesero: mesero, //Hacer fetch al primer mesero que se encuentre disponible
-              personaTitular: 'Persona de Prueba' //Hacer fetch a la primera persona que se encuentre en lista de espera
       };
       await Axios.put(`/mesas/change/${numeroMesa}`, request);
       mesas.value = await refillMesas(); // Actualizar lista de mesas
@@ -191,8 +186,7 @@ async function desocuparMesa() {
   try {
     if (mesaSeleccionada.value) {
       const numeroMesa = mesaSeleccionada.value.numero;
-      await Axios.put(`/waiters/${mesaSeleccionada.value.mesero.cellphone}`,{status: "active"});
-      await Axios.put(`/mesas/change/${numeroMesa}`, { disponible: true, mesero: null, personaTitular: null});
+      await Axios.put(`/mesas/change/${numeroMesa}`, { disponible: true, personaTitular: null});
       mesas.value = await refillMesas(); // Actualizar lista de mesas
       cerrarMesa(); // Cerrar modal de gestión de mesa
     }

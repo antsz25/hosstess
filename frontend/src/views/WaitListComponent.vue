@@ -20,13 +20,13 @@
   
         <!-- Visualización de clientes en lista de espera -->
         <div class="grid grid-cols-3 gap-4 z-10 relative">
-          <div v-for="cliente in clientesEnEspera" :key="cliente.id">
+          <div v-for="cliente in clientesEnEspera" :key="cliente.celular">
             <div class="relative">
               <div @click="mostrarModalOpciones(cliente)"
                 class="cursor-pointer p-6 rounded-lg shadow-md border border-gray-300 bg-white">
                 <h3 class="font-semibold text-lg text-red-500">{{ cliente.nombre }}</h3>
-                <p class="mt-2 text-base text-gray-700">Número en lista: {{ cliente.numero }}</p>
-                <p class="mt-1 text-base text-gray-700">Tiempo en espera: {{ cliente.tiempoEspera }}</p>
+                <p class="mt-2 text-base text-gray-700">Celular: {{ cliente.telefono }}</p>
+                <p class="mt-2 text-base text-gray-700">Número en lista: {{ cliente.posicion }}</p>
               </div>
             </div>
           </div>
@@ -71,7 +71,7 @@
             <h3 class="text-lg font-semibold mb-4">Asignar Mesa</h3>
             <p class="text-gray-700 mb-4">Selecciona una mesa para asignar al cliente:</p>
             <select v-model="mesaSeleccionada" class="w-full mb-2 px-3 py-2 border rounded-md">
-              <option v-for="mesa in mesasDisponibles" :key="mesa.id" :value="mesa.id">
+              <option v-for="mesa in mesasDisponibles" :key="mesa.numero" :value="mesa.numero">
                 {{ mesa.nombre }} (Capacidad: {{ mesa.capacidad }})
               </option>
             </select>
@@ -89,7 +89,7 @@
   
   <script setup>
   import Navbar from '../components/Sidebar.vue';
-  import { ref } from 'vue';
+  import { ref, onMounted } from 'vue';
   import Axios from '../main.ts';
 
   const clientesEnEspera = ref([]);
@@ -102,6 +102,17 @@
   const mesaSeleccionada = ref(null);
   const mesasDisponibles = ref([]);
   
+  onMounted(async ()=>{
+    clientesEnEspera.value = await GetWaitlist();
+  });
+  async function GetWaitlist(){
+    try{
+      const result = await Axios.get('/usuarios/waitlist');
+      return result.data;
+    }catch(err){
+      console.error(err);
+    }
+  }
   function cerrarListaEspera() {
     // Lógica para cerrar la lista de espera y limpiar estados si es necesario
   }
@@ -118,15 +129,19 @@
     telefonoNuevoCliente.value = '';
   }
   
-  function agregarCliente() {
-    const nuevoCliente = {
-      id: clientesEnEspera.value.length + 1,
-      nombre: nombreNuevoCliente.value,
-      telefono: telefonoNuevoCliente.value,
-      tiempoEspera: '0 min' // Puedes establecer un tiempo de espera inicial
-    };
-    clientesEnEspera.value.push(nuevoCliente);
-    cerrarModalAgregarCliente();
+  async function agregarCliente() {
+    try{
+      const nuevoCliente = {
+        posicion: clientesEnEspera.value.length + 1,
+        nombre: nombreNuevoCliente.value,
+        telefono: telefonoNuevoCliente.value,
+      };
+      await Axios.post('/usuarios/waitlist/add', nuevoCliente);
+      clientesEnEspera.value.push(nuevoCliente);
+      cerrarModalAgregarCliente();
+    }catch(err){
+      console.error(err);
+    }
   }
   
   function mostrarModalOpciones(cliente) {
@@ -140,14 +155,15 @@
     clienteSeleccionado.value = null;
   }
   
-  function mostrarModalAsignarMesa() {
-    // Simular carga de mesas disponibles desde backend (en una aplicación real, esto vendría del servidor)
-    mesasDisponibles.value = [
-      { id: 1, nombre: 'Mesa 1', capacidad: 2 },
-      { id: 2, nombre: 'Mesa 2', capacidad: 4 },
-      { id: 3, nombre: 'Mesa 3', capacidad: 6 },
-    ];
-    modalAsignarMesa.value = true;
+  async function mostrarModalAsignarMesa() {
+    try{ 
+      // Simular carga de mesas disponibles desde backend (en una aplicación real, esto vendría del servidor)
+      const response = await Axios.get('/mesas/free');
+      mesasDisponibles.value = response.data;
+      modalAsignarMesa.value = true;
+    }catch(err){
+      console.error(err);
+    }
   }
   
   function cerrarModalAsignarMesa() {
@@ -155,18 +171,29 @@
     mesaSeleccionada.value = null;
   }
   
-  function asignarMesaACliente() {
-    if (clienteSeleccionado.value && mesaSeleccionada.value) {
-      // Implementar lógica para asignar la mesa al cliente aquí
-      console.log(`Asignando mesa ${mesaSeleccionada.value} al cliente ${clienteSeleccionado.value.nombre}`);
-      cerrarModalAsignarMesa(); // Cerrar modal después de asignar la mesa
-      cerrarModalOpcionesCliente(); // Cerrar modal de opciones de cliente
+  async function asignarMesaACliente() {
+    try{
+      if (clienteSeleccionado.value && mesaSeleccionada.value) {
+        console.log(`Asignando mesa ${mesaSeleccionada.value} al cliente ${clienteSeleccionado.value.nombre}`);
+        await Axios.put(`/mesas/change/${mesaSeleccionada.value}`, { disponible:false, personaTitular: clienteSeleccionado.value.nombre });
+        await Axios.delete(`/usuarios/waitlist/delete/${clienteSeleccionado.value.telefono}`);
+        clientesEnEspera.value = clientesEnEspera.value.filter(c => c.telefono !== clienteSeleccionado.value.telefono);
+        cerrarModalAsignarMesa(); // Cerrar modal después de asignar la mesa
+        cerrarModalOpcionesCliente(); // Cerrar modal de opciones de cliente
+      }
+    }catch(err){
+      console.error(err);
     }
   }
   
-  function eliminarClienteEnEspera(cliente) {
-    clientesEnEspera.value = clientesEnEspera.value.filter(c => c.id !== cliente.id);
-    cerrarModalOpcionesCliente(); // Cerrar modal después de eliminar cliente
+  async function eliminarClienteEnEspera(cliente) {
+    try{
+      await Axios.delete(`/usuarios/waitlist/delete/${cliente.telefono}`);
+      clientesEnEspera.value = clientesEnEspera.value.filter(c => c.telefono !== cliente.telefono);
+      cerrarModalOpcionesCliente(); // Cerrar modal después de eliminar cliente
+    }catch(err){
+      console.error(err);
+    }
   }
   
   function cerrarModales() {

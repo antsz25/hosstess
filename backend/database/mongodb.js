@@ -47,7 +47,7 @@ async function GetMesaById(id){
   return result;
 }
 async function GetMesaFreeWaiter(){
-  const result = await dbConnection.collection("mesas").find({mesero: null}).toArray();
+  const result = await dbConnection.collection("mesas").find({disponible: true}).toArray();
   return result;
 }
 async function DeleteMesa(id){
@@ -97,11 +97,7 @@ async function GetWaitListByNumber(number){
   return result;
 }
 async function DeleteWaitList(id){
-  const result = await dbConnection.collection("waitlist").deleteOne({cellphone: parseInt(number)});
-  return result;
-}
-async function UpdateWaitList(id,data){
-  const result = await dbConnection.collection("waitlist").updateOne({cellphone: parseInt(number)}, {$set: data});
+  const result = await dbConnection.collection("waitlist").deleteOne({telefono: id});
   return result;
 }
 
@@ -129,6 +125,5 @@ module.exports = {
     GetWaitList,
     GetWaitListByNumber,
     DeleteWaitList,
-    UpdateWaitList
 
 };
