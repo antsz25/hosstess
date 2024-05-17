@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-screen">
+  <div class="flex min-h-screen">
     <!-- Navbar -->
     <Navbar />
     <!-- Contenedor principal -->
@@ -96,10 +96,33 @@ const capacidadNuevaMesa = ref('');
 onMounted(async () => {
   mesas.value = await refillMesas();
 });
-
 async function refillMesas() {
   try {
+    const convert = (text) => {
+        return isNaN(text) ? text : parseInt(text, 10);
+    };
+    // Helper function to create alphanumeric key
+    const alphanumKey = (key) => {
+        return key.split(/([0-9]+)/).map(convert);
+    };
     const response = await Axios.get('/mesas/');
+    // Sorting the array using the alphanumKey
+    response.data.sort((a, b) => {
+        const keyA = alphanumKey(a.nombre);
+        const keyB = alphanumKey(b.nombre);
+        for (let i = 0; i < Math.max(keyA.length, keyB.length); i++) {
+            if (keyA[i] !== keyB[i]) {
+                if (keyA[i] === undefined) return -1;
+                if (keyB[i] === undefined) return 1;
+                if (typeof keyA[i] === 'number' && typeof keyB[i] === 'number') {
+                    return keyA[i] - keyB[i];
+                } else {
+                    return keyA[i].toString().localeCompare(keyB[i].toString());
+                }
+            }
+        }
+        return 0;
+    });
     return response.data || [];
   } catch (error) {
     console.error('Error al obtener mesas:', error);

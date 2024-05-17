@@ -5,8 +5,9 @@ const mesaController = require('../controllers/mesa.controller');
 
 //REST
 //GET
-router.get('/:id',upload.none(),mesaController.GetMesaById);
 router.get('/',upload.none(),mesaController.Getmesas);
+router.get('/free',upload.none(),mesaController.GetMesaFreeWaiter);
+router.get('/unique/:id',upload.none(),mesaController.GetMesaById);
 //POST
 router.post('/add',upload.none(),mesaController.AddMesa);
 //PUT

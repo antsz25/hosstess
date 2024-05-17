@@ -7,7 +7,7 @@ const AddMesa = async(req,res)=>{
         if(error){
             return res.status(400).send(error);
         }
-        if(await service.GetMesaById(value.numero)){
+        if(await service.GetMesaById(value.nombre)){
             return res.status(400).send("Mesa ya existe");
         }
         const result = await service.AddMesa(value);
@@ -20,6 +20,14 @@ const AddMesa = async(req,res)=>{
 const GetMesaById = async(req,res)=>{
     try{
         const result = await service.GetMesaById(req.params.id);
+        return res.status(200).send(result);
+    }catch(err){
+        return res.status(500).send(err);
+    }
+}
+const GetMesaFreeWaiter = async(req,res)=>{
+    try{
+        const result = await service.GetMesaFreeWaiter();
         return res.status(200).send(result);
     }catch(err){
         return res.status(500).send(err);
@@ -64,6 +72,7 @@ module.exports = {
     AddMesa,
     GetMesaById,
     Getmesas,
+    GetMesaFreeWaiter,
     UpdateStatusMesa,
     DeleteMesa,
     CloseMesas

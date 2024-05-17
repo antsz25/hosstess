@@ -40,7 +40,11 @@ async function Getmesas(){
   return result;
 }
 async function GetMesaById(id){
-  const result = await dbConnection.collection("mesas").findOne({numero: parseInt(id)});
+  const result = await dbConnection.collection("mesas").findOne({nombre: id});
+  return result;
+}
+async function GetMesaFreeWaiter(){
+  const result = await dbConnection.collection("mesas").find({mesero: null}).toArray();
   return result;
 }
 async function DeleteMesa(id){
@@ -61,7 +65,7 @@ async function GetWaiters(){
   return result;
 }
 async function GetWaiterByCellphone(id){
-  const result = await dbConnection.collection("waiters").findOne({cellphone: parseInt(id)});
+  const result = await dbConnection.collection("waiters").findOne({cellphone: id});
   return result;
 }
 async function GetWaiterByDisponibility(disponibility){
@@ -69,11 +73,11 @@ async function GetWaiterByDisponibility(disponibility){
   return result;
 }
 async function DeleteWaiter(id){
-  const result = await dbConnection.collection("waiters").deleteOne({cellphone: String(id)});
+  const result = await dbConnection.collection("waiters").deleteOne({cellphone: id});
   return result;
 }
 async function UpdateWaiter(id,data){
-  const result = await dbConnection.collection("waiters").updateOne({cellphone: String(id)}, {$set: data});
+  const result = await dbConnection.collection("waiters").updateOne({cellphone: id}, {$set: data});
   return result;
 }
 //Logica de WaitList
@@ -107,6 +111,7 @@ module.exports = {
     AddMesa,
     UpdateStatusMesa,
     Getmesas,
+    GetMesaFreeWaiter,
     GetMesaById,
     DeleteMesa,
     CloseMesas,

@@ -1,14 +1,14 @@
 <template>
-  <div class="sidebar bg-red-600 text-white h-full">
-    <nav class="flex flex-col items-center justify-between h-full py-8">
+  <div class="sidebar flex flex-col mx-auto items-center justify-between bg-red-600 w-full text-white min-h-screen">
+    <nav class="fixed flex flex-col h-full py-8">
       <!-- Logo del restaurante -->
-      <h1 class="flex items-center">
+      <h1 class="flex items-center mb-8">
         <img src="https://i.imgur.com/xHIWOer.png" alt="Logo" class="w-12 h-12 rounded-full mr-3">
         <span class="font-bold text-2xl">Hostess</span>
       </h1>
 
       <!-- Opciones de navegación -->
-      <ul class="text-lg w-full">
+      <ul class="text-lg flex-grow">
         <li>
           <router-link to="/main" class="sidebar-link">Inicio</router-link>
         </li>

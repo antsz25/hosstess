@@ -6,6 +6,9 @@ async function AddMesa(data){
 async function UpdateStatusMesa(id,data){
     return await db.UpdateStatusMesa(id,data);
 }
+async function GetMesaFreeWaiter(disponibility){
+    return await db.GetMesaFreeWaiter(disponibility);
+}
 async function Getmesas(){
     return await db.Getmesas();
 }
@@ -24,5 +27,6 @@ module.exports = {
     Getmesas,
     GetMesaById,
     DeleteMesa,
-    CloseMesas
+    CloseMesas,
+    GetMesaFreeWaiter
 }
