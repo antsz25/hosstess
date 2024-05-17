@@ -32,7 +32,7 @@ async function AddMesa(data){
   return result;
 }
 async function UpdateStatusMesa(id,data){
-  const result = await dbConnection.collection("mesas").updateOne({numero: parseInt(id)}, {$set: {disponible: data.disponible, mesero: data.mesero, personaTitular: data.personaTitular}});
+  const result = await dbConnection.collection("mesas").updateOne({numero: parseInt(id)}, {$set: data});
   return result;
 }
 async function Getmesas(){
@@ -41,6 +41,9 @@ async function Getmesas(){
 }
 async function GetMesaById(id){
   const result = await dbConnection.collection("mesas").findOne({nombre: id});
+  if(!result){
+    return await dbConnection.collection("mesas").findOne({numero: parseInt(id)});
+  }
   return result;
 }
 async function GetMesaFreeWaiter(){

@@ -30,10 +30,10 @@ import { CheckSession } from '../main';
 export default {
   name: 'Sidebar',
   async mounted(){
-    /*const session = await CheckSession();
+    const session = await CheckSession();
     if(!session){
       this.$router.push('/');
-    }*/
+    }
   },
   methods: {
     logout() {

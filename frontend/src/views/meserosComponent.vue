@@ -29,7 +29,7 @@
           <p class="mt-2 text-base text-gray-700">Fecha de nacimiento: {{ mesero.fecha_nac }}</p>
           <p class="mt-2 text-base text-gray-700">Fecha de ingreso: {{ mesero.fecha_ing }}</p>
           <p class="mt-1 text-base text-gray-700">Celular: {{ mesero.celular }}</p>
-          <p v-if="mesero.estado == 'Ocupado'" class="mt-1 text-base text-gray-700">mesa: {{ mesero.mesa }}</p>
+          <p v-if="mesero.mesa !== null && mesero.mesa !== 0" class="mt-1 text-base text-gray-700">Mesas: {{ mesero.mesa }}</p>
           <p class="mt-1 text-base text-gray-700">Turno:             
             <span :class="{
               'bg-yellow-500 py-0.5 text-center text-white px-2 rounded': mesero.turno === 'Mañana',
@@ -91,13 +91,24 @@
       <div class="bg-white rounded-lg p-8">
         <h3 class="text-lg font-semibold mb-4">Asignar Mesa</h3>
         <p class="text-gray-700 mb-4">Selecciona las mesas a asignar a {{ this.meseroSeleccionado.nombre }}:</p>
-        <select v-model="mesasSeleccionadas" @mousedown="handleMouseDown" multiple class="w-full mb-2 px-3 py-2 border rounded-md">
-          <option v-for="mesa in mesasDisponibles" :key="mesa.id" :value="mesa.id">
-            {{ mesa.nombre }} (Capacidad: {{ mesa.capacidad }})
-          </option>
-        </select>
+        <div @click="toggleDropDown" class="flex justify-between w-full mb-2 px-3 py-2 border rounded-md">
+          <span>Selecciona las mesas a asignar</span>
+          <i :class="modalAsignarMesaDropDownVisible ? 'arrow-up' : 'arrow-down'"></i>
+        </div>
+        <div v-if="modalAsignarMesaDropDownVisible" class="overflow-y-auto mb-2 px-3 py-2 border rounded-md">
+          <label v-for='mesa in mesasDisponibles' :key="mesa.numero" :value="mesa.numero" class="block cursor-pointer p-1">
+              <input
+                type="checkbox"
+                :value="mesa.numero"
+                :id="mesa.numero"
+                v-model="modalAsignarMesaSelectedItems"
+              />
+            {{ mesa.nombre }} (Capacidad: {{ mesa.capacidad }} - ID: {{ mesa.numero }})
+          </label>
+          
+        </div>
         <div class="flex justify-between">
-          <button @click="asignarMesaACliente"
+          <button v-if="modalAsignarMesaDropDownVisible" @click="asignarMesas(this.meseroSeleccionado,modalAsignarMesaSelectedItems)"
             class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Asignar</button>
           <button @click="cerrarModalAsignarMesa"
             class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">Cancelar</button>
@@ -131,92 +142,101 @@ export default {
       mesasSeleccionadas: ref([]),
       meseroSeleccionado: null,
       mostrandoModal: ref(false),
-      modalAsignarMesa: ref(false)
+      modalAsignarMesa: ref(false),
+      modalAsignarMesaDropDownVisible: ref(false),
+      modalAsignarMesaSelectedItems: ref([])
     };
   },
   async mounted(){
-    try{
-      const result = await Axios.get('waiters/');
-      // Helper function to convert text to number if possible
-      const convert = (text) => {
-        return isNaN(text) ? text : parseInt(text, 10);
-      };
-      // Helper function to create alphanumeric key
-      const alphanumKey = (key) => {
-          return key.split(/([0-9]+)/).map(convert);
-      };
-      const mesas = await Axios.get('/mesas/free');
-      // Sorting array using the alphanumKey
-      mesas.data.sort((a, b) => {
-          const keyA = alphanumKey(a.nombre);
-          const keyB = alphanumKey(b.nombre);
-          for (let i = 0; i < Math.max(keyA.length, keyB.length); i++) {
-              if (keyA[i] !== keyB[i]) {
-                  if (keyA[i] === undefined) return -1;
-                  if (keyB[i] === undefined) return 1;
-                  if (typeof keyA[i] === 'number' && typeof keyB[i] === 'number') {
-                      return keyA[i] - keyB[i];
-                  } else {
-                      return keyA[i].toString().localeCompare(keyB[i].toString());
-                  }
-              }
-          }
-          return 0;
-      });
-      this.mesasDisponibles = mesas.data; //Filling data
-      let mesero = result.data; //Filling data
-      let status = "";
-      mesero.forEach(async element => {
-        let turno = "";
-        switch(element.workSchedule){
-          case "morning":
-            turno =  "Mañana";
-            break;
-          case "afternoon":
-            turno = "Tarde";
-            break;
-          case "evening":
-            turno = "Noche";
-            break;
-        }
-        status = await this.calcularEstadoMesero(element);
-        this.meseros.push({
-          id: element._id,
-          nombre: `${element.name} ${element.lastName}`,
-          edad: this.getAge(element.birthDate),
-          fecha_nac: element.birthDate.split('T').splice(0,1).join(''),
-          fecha_ing: element.startDate.split('T').splice(0,1).join(''),
-          celular: element.cellphone,
-          mesa: element.mesa,
-          turno: turno,
-          estado: status
-        });
-      });
-    }catch(err){
-      console.error(err.message);
-    }
+    await this.setMeseros();
   },
   methods: {
     handleMouseDown(event) {
-      event.preventDefault(); // Prevent default selection behavior
-      const option = event.target;
-      if (option.tagName === 'OPTION') {
-        const value = option.value;
-        const index = this.mesasSeleccionadas.indexOf(value);
-         if (index === -1) {
-          this.mesasSeleccionadas.push(value); // Add the option to the selected options
-         } else {
-           this.mesasSeleccionadas.splice(index, 1); // Remove the option from the selected options
-         }
-       }
+      event.preventDefault();
+      const select = event.target;
+      const option = select.options[select.selectedIndex];
+      option.selected = !option.selected;
+    },
+    async setMeseros(){
+      try{
+        const result = await Axios.get('waiters/');
+        // Helper function to convert text to number if possible
+        const convert = (text) => {
+          return isNaN(text) ? text : parseInt(text, 10);
+        };
+        // Helper function to create alphanumeric key
+        const alphanumKey = (key) => {
+            return key.split(/([0-9]+)/).map(convert);
+        };
+        const mesas = await Axios.get('/mesas/');
+        // Sorting array using the alphanumKey
+        mesas.data.sort((a, b) => {
+            const keyA = alphanumKey(a.nombre);
+            const keyB = alphanumKey(b.nombre);
+            for (let i = 0; i < Math.max(keyA.length, keyB.length); i++) {
+                if (keyA[i] !== keyB[i]) {
+                    if (keyA[i] === undefined) return -1;
+                    if (keyB[i] === undefined) return 1;
+                    if (typeof keyA[i] === 'number' && typeof keyB[i] === 'number') {
+                        return keyA[i] - keyB[i];
+                    } else {
+                        return keyA[i].toString().localeCompare(keyB[i].toString());
+                    }
+                }
+            }
+            return 0;
+        });
+        this.mesasDisponibles = mesas.data; //Filling data
+        let mesero = result.data; //Filling data
+        let status = "";
+        this.meseros = [];
+        mesero.forEach(async element => {
+          let turno = "";
+          switch(element.workSchedule){
+            case "morning":
+              turno =  "Mañana";
+              break;
+            case "afternoon":
+              turno = "Tarde";
+              break;
+            case "evening":
+              turno = "Noche";
+              break;
+          }
+          status = await this.calcularEstadoMesero(element);
+          this.meseros.push({
+            id: element._id,
+            nombre: `${element.name} ${element.lastName}`,
+            edad: this.getAge(element.birthDate),
+            fecha_nac: element.birthDate.split('T').splice(0,1).join(''),
+            fecha_ing: element.startDate.split('T').splice(0,1).join(''),
+            celular: element.cellphone,
+            mesa: element.mesa,
+            turno: turno,
+            estado: status
+          });
+        });
+      }catch(err){
+        console.error(err.message);
+      }
+    },
+    toggleDropDown(){
+      this.modalAsignarMesaDropDownVisible = !this.modalAsignarMesaDropDownVisible;
     },
     modalasignarMesas(meseroselec){
       this.meseroSeleccionado = meseroselec;
+      this.modalAsignarMesaSelectedItems = [];
+      this.mesasDisponibles.forEach(mesa => {
+        if(this.meseroSeleccionado.mesa !== null && this.meseroSeleccionado.mesa.includes(mesa.numero)){
+          this.modalAsignarMesaSelectedItems.push(mesa.numero);
+        }
+      });
       this.modalAsignarMesa = true;
     },
     cerrarModalAsignarMesa(){
       this.modalAsignarMesa = false;
       this.meseroSeleccionado = null;
+      this.modalAsignarMesaSelectedItems = [];
     },
     getAge(birthDate){
         let today = new Date();
@@ -260,8 +280,47 @@ export default {
       this.nuevoMesero.edad = null;
       this.nuevoMesero.turno = '';
     },
-    async asignarMesas(id,mesas){
-
+    async asignarMesas(mesero,mesas){
+      try{
+        const arrayMesas = mesas.map(mesa => parseInt(mesa));
+        let mesasOcupadas =null;
+        this.mesasDisponibles.forEach(mesa =>{
+            if(arrayMesas.includes(mesa.numero) && mesa.mesero){
+              if(mesa.mesero.cellphone !== mesero.celular){
+                if(mesasOcupadas){
+                  mesasOcupadas += ", " + mesa.numero;
+                }
+                else{
+                  mesasOcupadas = mesa.numero;
+                }
+              }
+            }
+        })
+        if(mesasOcupadas){
+          alert("Las mesas " + mesasOcupadas + " ya tienen un mesero asignado");
+          return;
+        }
+        const updateWasiters = await Axios.put(`/waiters/${mesero.celular}`,{mesa:mesas});
+        if(updateWasiters.status === 200){
+          let meseroAct = await Axios.get(`/waiters/${mesero.celular}`);
+          meseroAct = meseroAct.data;
+          this.mesasDisponibles.forEach(async mesa => {
+            if(arrayMesas.includes(mesa.numero) && !mesa.mesero){
+              let index = arrayMesas.indexOf(mesa.numero);
+              const updateTables = await Axios.put(`/mesas/change/${arrayMesas[index]}`,{mesero: meseroAct});
+            }
+            else if(!mesa.mesero){
+              const updateTables = await Axios.put(`/mesas/change/${mesa.numero}`,{mesero: null});
+            }
+          });
+          alert("Mesas asignadas correctamente");
+          await this.setMeseros();
+          this.cerrarModalAsignarMesa();
+        }
+      }catch(err){
+        await this.setMeseros();
+        console.error(err);
+      }
     },
     async agregarMesero() {
       if (this.nuevoMesero.nombre && this.nuevoMesero.apellido && this.nuevoMesero.edad && this.nuevoMesero.turno && this.nuevoMesero.celular) {
@@ -302,10 +361,16 @@ export default {
     },
     async eliminarMesero(id) {
       try{
-        const result = await Axios.delete(`/waiters/${id}`)
+        const result = await Axios.delete(`/waiters/${id}`);
         if(result.status == 200){
           const index = this.meseros.indexOf(this.meseros.find(mesero => mesero.celular === id));
           if (index !== -1) {
+            let element = this.meseros[index];
+            if(element.mesa !== null && element.mesa !== 0){
+              element.mesa.forEach(async mesa => {
+                const updateTables = await Axios.put(`/mesas/change/${mesa}`,{mesero: null});
+              });
+            }
             this.meseros.splice(index, 1);
           }
           alert("Mesero eliminado correctamente");
@@ -332,3 +397,23 @@ export default {
   }
 };
 </script>
+<style scoped>
+.arrow-up::before,
+.arrow-down::before {
+  content: '';
+  border: solid black;
+  display: inline-block;
+  width: 0;
+  height: 0;
+}
+
+.arrow-up::before {
+  border-width: 0 4px 6px 4px;
+  border-color: transparent transparent black transparent;
+}
+
+.arrow-down::before {
+  border-width: 6px 4px 0 4px;
+  border-color: black transparent transparent transparent;
+}
+</style>

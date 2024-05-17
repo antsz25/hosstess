@@ -28,7 +28,7 @@
                 <span v-if="mesa.disponible" class="bg-green-500 px-2 py-1 text-white rounded-full">Libre</span>
                 <span v-else class="bg-red-500 px-2 py-1 text-white rounded-full">Ocupada</span>
               </p>
-              <p class="mt-1 text-base text-gray-700">Mesero: {{ mesa.mesero ? `${mesa.mesero.name} ${mesa.mesero.lastName}` : 'Sin asignar' }}</p>
+              <p class="mt-1 text-base text-gray-700">Mesero: {{ mesa.mesero ? mesa.mesero.nombre : 'Sin asignar' }}</p>
               <p class="mt-1 text-base text-gray-700">Titular: {{ mesa.personaTitular ? mesa.personaTitular : 'Sin asignar' }}</p>
             </div>
             <button @click="eliminarMesa(mesa)"
@@ -132,16 +132,23 @@ async function refillMesas() {
 
 async function agregarNuevaMesa() {
   try {
+    const maxNumero = mesas.value.reduce((max, mesa) => Math.max(max, mesa.numero), -Infinity);
     const nuevaMesa = {
-      numero: mesas.value.length + 1, // Asignar número de mesa automáticamente
+      numero: maxNumero + 1, // Asignar número de mesa automáticamente
       nombre: nombreNuevaMesa.value,
       capacidad: capacidadNuevaMesa.value,
       disponible: true // Nueva mesa se agrega como disponible por defecto
     };
-    await Axios.post('/mesas/add', nuevaMesa);
+    await Axios.post('/mesas/add', nuevaMesa).catch((error) =>{console.log(error);throw new Error(`${error.response.status}`);});
     mesas.value = await refillMesas(); // Actualizar lista de mesas
     cerrarModalAgregarMesa(); // Cerrar modal de agregar mesa
   } catch (error) {
+    let split = String(error).split(" ")[1];
+    if (split === "400") {
+      alert('Error al agregar mesa, por favor verifique los datos ingresados.');
+    }else{
+      alert('Error al agregar mesa, por favor intente de nuevo.');
+    }
     console.error('Error al agregar mesa:', error);
   }
 }
