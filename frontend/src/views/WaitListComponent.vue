@@ -26,7 +26,6 @@
                 class="cursor-pointer p-6 rounded-lg shadow-md border border-gray-300 bg-white">
                 <h3 class="font-semibold text-lg text-red-500">{{ cliente.nombre }}</h3>
                 <p class="mt-2 text-base text-gray-700">Celular: {{ cliente.telefono }}</p>
-                <p class="mt-2 text-base text-gray-700">Número en lista: {{ cliente.posicion }}</p>
               </div>
             </div>
           </div>
@@ -132,7 +131,6 @@
   async function agregarCliente() {
     try{
       const nuevoCliente = {
-        posicion: clientesEnEspera.value.length + 1,
         nombre: nombreNuevoCliente.value,
         telefono: telefonoNuevoCliente.value,
       };
