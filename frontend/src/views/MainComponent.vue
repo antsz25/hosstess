@@ -64,7 +64,7 @@
           <h3 class="text-lg font-semibold mb-4">Agregar Mesa</h3>
           <p class="text-gray-700 mb-4">Por favor, ingrese el nombre y la capacidad de la mesa:</p>
           <input v-model="nombreNuevaMesa" type="text" class="w-full mb-2 px-3 py-2 border rounded-md"
-            placeholder="Nombre de la mesa">
+            placeholder="Nombre de la mesa" maxLength = "30">
           <select v-model="capacidadNuevaMesa" class="w-full mb-2 px-3 py-2 border rounded-md">
             <option value="2">2 personas</option>
             <option value="4">4 personas</option>
@@ -139,7 +139,6 @@ async function agregarNuevaMesa() {
       capacidad: capacidadNuevaMesa.value,
       disponible: true // Nueva mesa se agrega como disponible por defecto
     };
-    console.log(nuevaMesa);
     await Axios.post('/mesas/add', nuevaMesa).catch((error) =>{console.log(error);throw new Error(`${error.response.status}`);});
     mesas.value = await refillMesas(); // Actualizar lista de mesas
     cerrarModalAgregarMesa(); // Cerrar modal de agregar mesa

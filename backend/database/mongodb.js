@@ -97,6 +97,7 @@ async function GetWaitListByNumber(number){
   return result;
 }
 async function DeleteWaitList(id){
+  console.log(id);
   const result = await dbConnection.collection("waitlist").deleteOne({telefono: id});
   return result;
 }

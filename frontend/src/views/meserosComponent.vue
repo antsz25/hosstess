@@ -137,7 +137,7 @@ export default {
         celular: null,
         turno: '',
         fecha_ing: null,
-        fecha_nac: null
+        fecha_nac: null,
       },
       mesasSeleccionadas: ref([]),
       meseroSeleccionado: null,
@@ -204,6 +204,8 @@ export default {
               break;
           }
           status = await this.calcularEstadoMesero(element);
+          console.log(element.birthDate);
+          console.log(element.birthDate.split('T').splice(0,1).join('')); 
           this.meseros.push({
             id: element._id,
             nombre: `${element.name} ${element.lastName}`,
@@ -323,7 +325,8 @@ export default {
       }
     },
     async agregarMesero() {
-      if (this.nuevoMesero.nombre && this.nuevoMesero.apellido && this.nuevoMesero.edad && this.nuevoMesero.turno && this.nuevoMesero.celular) {
+      console.log(this.nuevoMesero);
+      if (this.nuevoMesero.nombre && this.nuevoMesero.apellido && this.nuevoMesero.fecha_nac && this.nuevoMesero.turno && this.nuevoMesero.celular && this.nuevoMesero.fecha_ing) {
         let workSchedule = "";
         switch(this.nuevoMesero.turno){
           case "Mañana":
@@ -339,8 +342,8 @@ export default {
         const result = await Axios.post('/waiters/add',{
           name: this.nuevoMesero.nombre,
           lastName: this.nuevoMesero.apellido,
-          birthDate: this.nuevoMesero.edad,
-
+          birthDate: this.nuevoMesero.fecha_nac,
+          startDate: this.nuevoMesero.fecha_ing,
           cellphone: this.nuevoMesero.celular,
           workSchedule: workSchedule,
           role: "waiter",
@@ -353,6 +356,7 @@ export default {
           turno: this.nuevoMesero.turno,
           estado: 'Descanso'
         });
+        await this.setMeseros();
         this.cerrarModal();
       }
       else {

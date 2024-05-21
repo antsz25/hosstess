@@ -23,7 +23,7 @@
                 </div>
                 <div>
                     <label for="cellphone" class="block text-sm font-medium text-gray-700">N&uacute;mero Telef&oacute;nico</label>
-                    <input type="text" id="cellphone" v-model="cellphone" maxlength="14" placeholder="(xxx)-xxx-xxxx" class="input-field"
+                    <input type="text" id="cellphone" v-model="cellphone" maxlength="14" placeholder="(xxx)-xxx-xxxx"
                     :on-change="validateNum" required />         
                     <label v-if="formatCellphoneError" for="cellphone" class="block text-sm font-medium text-red-700">Formato de n&uacute;mero incorrecto</label>
                 </div>

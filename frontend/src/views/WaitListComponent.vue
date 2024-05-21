@@ -37,8 +37,8 @@
             <h3 class="text-lg font-semibold mb-4">Agregar Nuevo Cliente</h3>
             <input v-model="nombreNuevoCliente" type="text" class="w-full mb-2 px-3 py-2 border rounded-md"
               placeholder="Nombre del cliente">
-            <input v-model="telefonoNuevoCliente" type="text" class="w-full mb-2 px-3 py-2 border rounded-md"
-              placeholder="Teléfono del cliente">
+            <input type="number" id="cellphone" v-model="telefonoNuevoCliente" maxlength="14" placeholder="(xxx)-xxx-xxxx" class="w-full mb-2 px-3 py-2 border rounded-md remove-arrow"
+              required min="0"/>      
             <div class="flex justify-between">
               <button @click="agregarCliente"
                 class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Agregar</button>
@@ -85,12 +85,10 @@
       </div>
     </div>
   </template>
-  
   <script setup>
   import Navbar from '../components/Sidebar.vue';
-  import { ref, onMounted } from 'vue';
+  import { ref, onMounted, computed} from 'vue';
   import Axios from '../main.ts';
-
   const clientesEnEspera = ref([]);
   const modalAgregarCliente = ref(false);
   const nombreNuevoCliente = ref('');
@@ -177,7 +175,7 @@
         await Axios.delete(`/usuarios/waitlist/delete/${clienteSeleccionado.value.telefono}`);
         clientesEnEspera.value = clientesEnEspera.value.filter(c => c.telefono !== clienteSeleccionado.value.telefono);
         cerrarModalAsignarMesa(); // Cerrar modal después de asignar la mesa
-        cerrarModalOpcionesCliente(); // Cerrar modal de opciones de cliente
+        cerrarModalOpcionesCliente(); // Cerrar modal  de opciones de cliente
       }
     }catch(err){
       console.error(err);
