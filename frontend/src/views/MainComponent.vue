@@ -6,7 +6,7 @@
     <div class="flex-grow p-4 relative bg-cover bg-center"
       style="background-image: url('https://i.imgur.com/xHIWOer.png');">
       <div class="absolute inset-0 bg-black opacity-75" @click="cerrarMesa"></div>
-      <h2 class="text-2xl font-semibold mb-4 z-10 relative text-red-500">Gestor de Mesas y Meseros</h2>
+      <h2 class="text-2xl font-semibold mb-4 z-10 relative text-white">Gestor de Mesas y Meseros</h2>
       <!-- Botón para agregar mesa -->
       <button @click="mostrarModalAgregarMesa"
         class="absolute top-4 right-4 z-10 p-2 rounded-full bg-gray-200 hover:bg-gray-300 focus:outline-none">
@@ -194,27 +194,9 @@ async function desocuparMesa() {
 
 async function eliminarMesa(mesa) {
   try {
-    if(confirm(`¿Estás seguro de eliminar la mesa ${mesa.nombre}?`)){
-      const password = prompt("Por favor, ingrese la contraseña de administrador para continuar:");
-      if(password !== "1234"){
-        alert("Contraseña erronea");
-        return;
-      }
-      else{
-        const numeroMesa = mesa.numero;
-        const mesasEnMesero = mesa.mesero.mesa;
-        const index = mesasEnMesero.indexOf(numeroMesa);
-        if (index > -1) {
-          mesasEnMesero.splice(index, 1);
-        }
-        await Axios.put(`/waiters/${mesa.mesero.cellphone}`, {mesa: mesasEnMesero});
-        await Axios.delete(`/mesas/delete/${numeroMesa}`);
-        mesas.value = mesas.value.filter((m) => m.numero !== numeroMesa); // Eliminar la mesa de la lista local
-      }
-    }else{
-
-    }
-
+    const numeroMesa = mesa.numero;
+    await Axios.delete(`/mesas/delete/${numeroMesa}`);
+    mesas.value = mesas.value.filter((m) => m.numero !== numeroMesa); // Eliminar la mesa de la lista local
   } catch (error) {
     console.error('Error al eliminar mesa:', error);
     alert('Error al eliminar mesa, por favor intente de nuevo.')

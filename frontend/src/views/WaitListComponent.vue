@@ -6,7 +6,7 @@
       <div class="flex-grow p-4 relative bg-cover bg-center"
         style="background-image: url('https://i.imgur.com/xHIWOer.png');">
         <div class="absolute inset-0 bg-black opacity-75" @click="cerrarListaEspera"></div>
-        <h2 class="text-2xl font-semibold mb-4 z-10 relative text-red-500">Lista de Espera</h2>
+        <h2 class="text-2xl font-semibold mb-4 z-10 relative text-white">Lista de Espera</h2>
   
         <!-- Botón para agregar nuevo cliente -->
         <button @click="mostrarModalAgregarCliente"
