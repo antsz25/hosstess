@@ -130,7 +130,7 @@
     try{
       const nuevoCliente = {
         nombre: nombreNuevoCliente.value,
-        telefono: telefonoNuevoCliente.value,
+        telefono: telefonoNuevoCliente.value.toString(),
       };
       await Axios.post('/usuarios/waitlist/add', nuevoCliente);
       clientesEnEspera.value.push(nuevoCliente);
