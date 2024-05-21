@@ -132,13 +132,14 @@ async function refillMesas() {
 
 async function agregarNuevaMesa() {
   try {
-    const maxNumero = mesas.value.reduce((max, mesa) => Math.max(max, mesa.numero), -Infinity);
+    const maxNumero = mesas.value.reduce((max, mesa) => Math.max(max, mesa.numero), -Infinity) | 1;
     const nuevaMesa = {
       numero: maxNumero + 1, // Asignar número de mesa automáticamente
       nombre: nombreNuevaMesa.value,
       capacidad: capacidadNuevaMesa.value,
       disponible: true // Nueva mesa se agrega como disponible por defecto
     };
+    console.log(nuevaMesa);
     await Axios.post('/mesas/add', nuevaMesa).catch((error) =>{console.log(error);throw new Error(`${error.response.status}`);});
     mesas.value = await refillMesas(); // Actualizar lista de mesas
     cerrarModalAgregarMesa(); // Cerrar modal de agregar mesa
