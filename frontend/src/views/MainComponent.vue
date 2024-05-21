@@ -194,9 +194,29 @@ async function desocuparMesa() {
 
 async function eliminarMesa(mesa) {
   try {
-    const numeroMesa = mesa.numero;
-    await Axios.delete(`/mesas/delete/${numeroMesa}`);
-    mesas.value = mesas.value.filter((m) => m.numero !== numeroMesa); // Eliminar la mesa de la lista local
+    if(confirm(`¿Estás seguro de eliminar la mesa ${mesa.nombre}?`)){
+      const password = prompt("Por favor, ingrese la contraseña de administrador para continuar:");
+      if(password !== "1234"){
+        alert("Contraseña erronea");
+        return;
+      }
+      else{
+        const numeroMesa = mesa.numero;
+        const mesasEnMesero = mesa.mesero ? mesa.mesero.mesa : null;
+        if(mesasEnMesero !== null){
+          const index = mesasEnMesero.indexOf(numeroMesa);
+          if (index > -1) {
+            mesasEnMesero.splice(index, 1);
+          }
+          await Axios.put(`/waiters/${mesa.mesero.cellphone}`, {mesa: mesasEnMesero});
+        }
+        await Axios.delete(`/mesas/delete/${numeroMesa}`);
+        mesas.value = mesas.value.filter((m) => m.numero !== numeroMesa); // Eliminar la mesa de la lista local
+      }
+    }else{
+
+    }
+
   } catch (error) {
     console.error('Error al eliminar mesa:', error);
     alert('Error al eliminar mesa, por favor intente de nuevo.')
