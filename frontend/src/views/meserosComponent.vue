@@ -59,12 +59,36 @@
         </div>
       </div>
     </div>
-    <!-- Modal para agregar nuevo mesero -->
-    <div v-if="mostrandoModal" class="fixed inset-0 z-50 flex items-center justify-center">
+     <!-- Modal para agregar nuevo mesero -->
+     <div v-if="mostrandoModal" class="fixed inset-0 z-50 flex items-center justify-center">
       <div class="bg-white rounded-lg p-8" @click.stop>
         <h3 class="text-lg font-semibold mb-4">Agregar Nuevo Mesero</h3>
         <form @submit.prevent="agregarMesero" class="m-5">
-          <!-- Contenido del formulario para agregar mesero -->
+          <input v-model="nuevoMesero.nombre" type="text" class="w-full my-3 px-3 py-2 border rounded-md"
+            placeholder="Nombre">
+          <input v-model="nuevoMesero.apellido" type="text" class="w-full my-3 px-3 py-2 border rounded-md"
+            placeholder="Apellido" />
+          <label for = "fecha_nac">Fecha de nacimiento</label>
+          <input v-model.date="nuevoMesero.fecha_nac" type="date" class="w-full mb-3 px-3 py-2 border rounded-md"
+            placeholder="Fecha de nacimiento" id="fecha_nac">
+          <label for = "fecha_ing">Fecha de ingreso</label>
+          <input v-model.date="nuevoMesero.fecha_ing" name="fecha_ing" type="date" class="w-full mb-3 px-3 py-2 border rounded-md"
+            placeholder="Fecha de nacimiento">
+          <input v-model="nuevoMesero.celular" type="text" class="w-full my-3 px-3 py-2 border rounded-md"
+            placeholder="Celular">
+          <!-- Menú desplegable para seleccionar el turno -->
+          <select v-model="nuevoMesero.turno" class="w-full my-3 px-3 py-2 border rounded-md">
+            <option value="">Seleccionar Turno</option>
+            <option value="Mañana">Mañana</option>
+            <option value="Tarde">Tarde</option>
+            <option value="Noche">Noche</option>
+          </select>
+          <div class="flex justify-end">
+            <button type="submit"
+              class="mx-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none">Agregar</button>
+            <button @click="cerrarModal"
+              class="mx-2 px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 focus:outline-none">Cancelar</button>
+          </div>
         </form>
       </div>
     </div>
