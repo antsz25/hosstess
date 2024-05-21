@@ -379,19 +379,28 @@ export default {
     },
     async eliminarMesero(id) {
       try{
-        const result = await Axios.delete(`/waiters/${id}`);
-        if(result.status == 200){
-          const index = this.meseros.indexOf(this.meseros.find(mesero => mesero.celular === id));
-          if (index !== -1) {
-            let element = this.meseros[index];
-            if(element.mesa !== null && element.mesa !== 0){
-              element.mesa.forEach(async mesa => {
-                const updateTables = await Axios.put(`/mesas/change/${mesa}`,{mesero: null});
-              });
-            }
-            this.meseros.splice(index, 1);
+        if(confirm("¿Estás seguro de eliminar al mesero?"	)){
+          const password = prompt("Por favor, ingrese la contraseña de administrador para continuar:");
+          if(password !== "1234"){
+            alert("Contraseña erronea");
+            return;
           }
-          alert("Mesero eliminado correctamente");
+          else{
+            const result = await Axios.delete(`/waiters/${id}`);
+            if(result.status == 200){
+              const index = this.meseros.indexOf(this.meseros.find(mesero => mesero.celular === id));
+              if (index !== -1) {
+                let element = this.meseros[index];
+                if(element.mesa !== null && element.mesa !== 0){
+                  element.mesa.forEach(async mesa => {
+                    const updateTables = await Axios.put(`/mesas/change/${mesa}`,{mesero: null});
+                  });
+                }
+                this.meseros.splice(index, 1);
+              }
+              alert("Mesero eliminado correctamente");
+            }
+          }
         }
       }catch(err){
         console.error(err.message);
