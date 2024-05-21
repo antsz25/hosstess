@@ -72,7 +72,35 @@
     <div v-if="modalAsignarMesa" class="fixed inset-0 z-50 flex items-center justify-center">
       <div class="bg-white rounded-lg p-8">
         <h3 class="text-lg font-semibold mb-4">Asignar Mesa</h3>
-        <!-- Contenido del modal para asignar mesa -->
+        <!-- Modal para asignar mesa -->
+    <div v-if="modalAsignarMesa" class="fixed inset-0 z-50 flex items-center justify-center">
+      <div class="bg-white rounded-lg p-8">
+        <h3 class="text-lg font-semibold mb-4">Asignar Mesa</h3>
+        <p class="text-gray-700 mb-4">Selecciona las mesas a asignar a {{ this.meseroSeleccionado.nombre }}:</p>
+        <div @click="toggleDropDown" class="flex justify-between w-full mb-2 px-3 py-2 border rounded-md">
+          <span>Selecciona las mesas a asignar</span>
+          <i :class="modalAsignarMesaDropDownVisible ? 'arrow-up' : 'arrow-down'"></i>
+        </div>
+        <div v-if="modalAsignarMesaDropDownVisible" class="overflow-y-auto mb-2 px-3 py-2 border rounded-md">
+          <label v-for='mesa in mesasDisponibles' :key="mesa.numero" :value="mesa.numero" class="block cursor-pointer p-1">
+              <input
+                type="checkbox"
+                :value="mesa.numero"
+                :id="mesa.numero"
+                v-model="modalAsignarMesaSelectedItems"
+              />
+            {{ mesa.nombre }} (Capacidad: {{ mesa.capacidad }} - ID: {{ mesa.numero }})
+          </label>
+          
+        </div>
+        <div class="flex justify-between">
+          <button v-if="modalAsignarMesaDropDownVisible" @click="asignarMesas(this.meseroSeleccionado,modalAsignarMesaSelectedItems)"
+            class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Asignar</button>
+          <button @click="cerrarModalAsignarMesa"
+            class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">Cancelar</button>
+        </div>
+      </div>
+    </div>
       </div>
     </div>
   </div>
