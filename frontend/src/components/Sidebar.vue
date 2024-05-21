@@ -10,7 +10,7 @@
       <!-- Opciones de navegación -->
       <ul class="text-lg flex-grow">
         <li>
-          <router-link to="/main" class="sidebar-link">Inicio</router-link>
+          <router-link to="/main" class="sidebar-link">Mesas</router-link>
         </li>
         <li>
           <router-link to="/meseros" class="sidebar-link">Personal</router-link>

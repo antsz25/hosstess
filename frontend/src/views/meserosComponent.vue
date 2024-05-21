@@ -23,7 +23,17 @@
 
       <!-- Lista de meseros -->
       <div class="grid grid-cols-3 gap-4 z-10 relative">
-        <div v-for="mesero in meseros" :key="mesero.id" class="grid grid-cols-1 bg-white rounded-lg shadow-md p-4">
+        <div v-for="mesero in meseros" :key="mesero.id" class="grid grid-cols-1 bg-white rounded-lg shadow-md p-4 relative">
+          <!-- Botón para eliminar -->
+          <div class="absolute top-0 right-0 mt-2 mr-2">
+            <button @click="eliminarMesero(mesero.celular)"
+              class="absolute top-2 right-2 text-red-500 hover:text-red-700 focus:outline-none">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+  <path fill-rule="evenodd" d="M14.707 5.293a1 1 0 0 0-1.414 0L10 8.586 6.707 5.293a1 1 0 1 0-1.414 1.414L8.586 10l-3.293 3.293a1 1 0 1 0 1.414 1.414L10 11.414l3.293 3.293a1 1 0 0 0 1.414-1.414L11.414 10l3.293-3.293a1 1 0 0 0 0-1.414z" clip-rule="evenodd" />
+</svg>
+            </button>
+          </div>
+          <!-- Contenido de la tarjeta del mesero -->
           <h3 class="font-semibold text-lg text-red-500">{{ mesero.nombre }}</h3>
           <p class="mt-2 text-base text-gray-700">Edad: {{ mesero.edad }}</p>
           <p class="mt-2 text-base text-gray-700">Fecha de nacimiento: {{ mesero.fecha_nac }}</p>
@@ -46,10 +56,6 @@
             class="mt-2 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 focus:outline-none">
             Asignar Mesas
           </button>
-          <button @click="eliminarMesero(mesero.celular)"
-            class="mt-2 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 focus:outline-none">
-            Eliminar
-          </button>
         </div>
       </div>
     </div>
@@ -58,31 +64,7 @@
       <div class="bg-white rounded-lg p-8" @click.stop>
         <h3 class="text-lg font-semibold mb-4">Agregar Nuevo Mesero</h3>
         <form @submit.prevent="agregarMesero" class="m-5">
-          <input v-model="nuevoMesero.nombre" type="text" class="w-full my-3 px-3 py-2 border rounded-md"
-            placeholder="Nombre">
-          <input v-model="nuevoMesero.apellido" type="text" class="w-full my-3 px-3 py-2 border rounded-md"
-            placeholder="Apellido" />
-          <label for = "fecha_nac">Fecha de nacimiento</label>
-          <input v-model.date="nuevoMesero.fecha_nac" type="date" class="w-full mb-3 px-3 py-2 border rounded-md"
-            placeholder="Fecha de nacimiento" id="fecha_nac">
-          <label for = "fecha_ing">Fecha de ingreso</label>
-          <input v-model.date="nuevoMesero.fecha_ing" name="fecha_ing" type="date" class="w-full mb-3 px-3 py-2 border rounded-md"
-            placeholder="Fecha de nacimiento">
-          <input v-model="nuevoMesero.celular" type="text" class="w-full my-3 px-3 py-2 border rounded-md"
-            placeholder="Celular">
-          <!-- Menú desplegable para seleccionar el turno -->
-          <select v-model="nuevoMesero.turno" class="w-full my-3 px-3 py-2 border rounded-md">
-            <option value="">Seleccionar Turno</option>
-            <option value="Mañana">Mañana</option>
-            <option value="Tarde">Tarde</option>
-            <option value="Noche">Noche</option>
-          </select>
-          <div class="flex justify-end">
-            <button type="submit"
-              class="mx-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none">Agregar</button>
-            <button @click="cerrarModal"
-              class="mx-2 px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 focus:outline-none">Cancelar</button>
-          </div>
+          <!-- Contenido del formulario para agregar mesero -->
         </form>
       </div>
     </div>
@@ -90,33 +72,13 @@
     <div v-if="modalAsignarMesa" class="fixed inset-0 z-50 flex items-center justify-center">
       <div class="bg-white rounded-lg p-8">
         <h3 class="text-lg font-semibold mb-4">Asignar Mesa</h3>
-        <p class="text-gray-700 mb-4">Selecciona las mesas a asignar a {{ this.meseroSeleccionado.nombre }}:</p>
-        <div @click="toggleDropDown" class="flex justify-between w-full mb-2 px-3 py-2 border rounded-md">
-          <span>Selecciona las mesas a asignar</span>
-          <i :class="modalAsignarMesaDropDownVisible ? 'arrow-up' : 'arrow-down'"></i>
-        </div>
-        <div v-if="modalAsignarMesaDropDownVisible" class="overflow-y-auto mb-2 px-3 py-2 border rounded-md">
-          <label v-for='mesa in mesasDisponibles' :key="mesa.numero" :value="mesa.numero" class="block cursor-pointer p-1">
-              <input
-                type="checkbox"
-                :value="mesa.numero"
-                :id="mesa.numero"
-                v-model="modalAsignarMesaSelectedItems"
-              />
-            {{ mesa.nombre }} (Capacidad: {{ mesa.capacidad }} - ID: {{ mesa.numero }})
-          </label>
-          
-        </div>
-        <div class="flex justify-between">
-          <button v-if="modalAsignarMesaDropDownVisible" @click="asignarMesas(this.meseroSeleccionado,modalAsignarMesaSelectedItems)"
-            class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Asignar</button>
-          <button @click="cerrarModalAsignarMesa"
-            class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">Cancelar</button>
-        </div>
+        <!-- Contenido del modal para asignar mesa -->
       </div>
     </div>
   </div>
 </template>
+
+
 
 <script>
 import { ref } from 'vue';
