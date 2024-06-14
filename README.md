@@ -1,4 +1,8 @@
-# minuta
+# Sistema gestor de meseros para un restaurante (Hosstess)
+
+## Descripción
+Hosstess es una innovadora aplicación web diseñada para optimizar la gestión de meseros en un restaurante. Utilizando un conjunto de tecnologías modernas y robustas como Vue.js para el frontend, Express.js para el backend y Amazon Web Services (AWS) para el alojamiento y servicios en la nube, Hosstess proporciona una solución integral y eficiente para la administración de tareas y personal en el entorno gastronómico.
+(Proyecto de portafolio, se evita la venta o producción misma de este).
 
 ## Correr el programa
 Ahora el proyecto funciona como mono repositorio. Por lo que, para correrlo, tienes que hacerlo TODO desde la raiz.
