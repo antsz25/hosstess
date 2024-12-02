@@ -14,7 +14,7 @@
             </button>
         </div>
         <div class="space-y-4 mb-8">
-            <div v-for="(product, index) in products" :key="index" class="flex items-center">
+            <div v-for="(product, index) in orderProducts" :key="index" class="flex items-center">
                 <img :src="product.image" :alt="product.name" class="w-12 h-12 rounded-lg object-cover" />
                 <div class="ml-3 flex-1">
                     <p class="text-sm font-medium text-gray-800">{{ product.name }}</p>
@@ -45,22 +45,28 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import axios from 'axios';
+import { ref, computed, watch } from "vue";
+import axios from "axios";
+import { store } from "../store"; // Estado global compartido
 
-// Datos reactivos
-const apiUrl = 'http://localhost:3001/orders'; // Cambia a la URL de tu backend
+// Props para productos iniciales
+const props = defineProps({
+    products: {
+        type: Array,
+        default: () => [],
+    },
+});
+
 const orderId = 34562;
-const deliveryMethod = ref('takeaway');
-const products = ref([
-    { name: 'Producto 1', price: 29.99, quantity: 1, image: 'https://via.placeholder.com/48' },
-    { name: 'Producto 2', price: 19.99, quantity: 2, image: 'https://via.placeholder.com/48' },
-]);
+const deliveryMethod = ref("takeaway");
+
+// Lista de productos del pedido (sincronizado con el store global)
+const orderProducts = ref([]);
 
 // Cálculos
 const taxRate = 0.21;
 const subtotal = computed(() =>
-    products.value.reduce((sum, product) => sum + product.price * product.quantity, 0)
+    orderProducts.value.reduce((sum, product) => sum + product.price * product.quantity, 0)
 );
 const total = computed(() => subtotal.value + subtotal.value * taxRate);
 
@@ -73,18 +79,50 @@ const finalizeOrder = async () => {
     const orderPayload = {
         orderId,
         deliveryMethod: deliveryMethod.value,
-        products: products.value,
+        products: orderProducts.value,
         subtotal: subtotal.value,
         tax: subtotal.value * taxRate,
         total: total.value,
     };
 
     try {
-        const response = await axios.post(apiUrl, orderPayload);
+        const response = await axios.post("http://localhost:3001/orders", orderPayload);
         alert(`Pedido finalizado con éxito. Respuesta: ${response.status}`);
     } catch (error) {
         console.error("Error al finalizar el pedido:", error);
         alert("Hubo un error al finalizar el pedido.");
     }
 };
+
+// Sincronización con productos del store global
+watch(
+    () => store.platillosSeleccionados,
+    (newProducts) => {
+        newProducts.forEach((product) => {
+            const existingProduct = orderProducts.value.find((p) => p.name === product.name);
+            if (existingProduct) {
+                existingProduct.quantity += product.quantity;
+            } else {
+                orderProducts.value.push({ ...product });
+            }
+        });
+    },
+    { deep: true }
+);
+
+// Inicializa con los productos recibidos como props
+watch(
+    () => props.products,
+    (newProducts) => {
+        newProducts.forEach((product) => {
+            const existingProduct = orderProducts.value.find((p) => p.name === product.name);
+            if (existingProduct) {
+                existingProduct.quantity += product.quantity;
+            } else {
+                orderProducts.value.push({ ...product, quantity: product.quantity || 1 });
+            }
+        });
+    },
+    { immediate: true, deep: true }
+);
 </script>

@@ -12,7 +12,7 @@ let publicUrl: string;
 
 // Configuración estática según ubicación
 if (window.location.hostname === "localhost") {
-  publicUrl = "http://localhost:3001/";
+  publicUrl = "http://localhost:8081/";
 } else {
   publicUrl = "https://produccion-api.com/"; // Cambia a la URL de tu backend en producción
 }

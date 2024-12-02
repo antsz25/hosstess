@@ -27,21 +27,12 @@
         <div class="mb-8">
           <div class="flex space-x-4 mb-6 overflow-x-auto pb-2">
             <button
-              v-for="categoria in categorias"
-              :key="categoria"
+              v-for="menu in menus"
+              :key="menu.id || menu.name"
               class="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700"
-              @click="filtrarPorCategoria(categoria)"
+              @click="loadMenuProducts(menu.id)"
             >
-              {{ categoria }}
-            </button>
-          </div>
-          <div class="flex justify-between items-center">
-            <h2 class="text-xl font-semibold text-gray-800">Seleccione Productos</h2>
-            <button
-              class="text-gray-600 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-100"
-              @click="toggleParaLlevar"
-            >
-              Para Llevar <span class="ml-2">▼</span>
+              {{ menu.name || 'Sin Nombre' }}
             </button>
           </div>
         </div>
@@ -49,18 +40,17 @@
         <!-- Productos -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div
-            v-for="producto in productosFiltrados"
-            :key="producto.nombre"
-            class="bg-white border border-gray-200 rounded-md shadow-sm p-4"
-          >
+  v-for="producto in productosFiltrados"
+  :key="producto.id || producto.name"
+  @click="agregarAOrden(producto)"
+>
             <div class="h-32 bg-gray-200 rounded-md mb-4 flex items-center justify-center">
               <span class="text-gray-500">Imagen</span>
             </div>
-            <h3 class="font-semibold mb-2 text-gray-800">{{ producto.nombre }}</h3>
-            <p class="text-sm text-gray-600 mb-2">{{ producto.descripcion }}</p>
+            <h3 class="font-semibold mb-2 text-gray-800">{{ producto.name || 'Producto Desconocido' }}</h3>
+            <p class="text-sm text-gray-600 mb-2">{{ producto.description || 'Sin descripción disponible' }}</p>
             <div class="flex justify-between items-center">
-              <p class="text-gray-800 font-semibold">{{ producto.precio }}</p>
-              <p class="text-sm text-gray-500">{{ producto.disponible }} disponibles</p>
+              <p class="text-gray-800 font-semibold">${{ producto.price || '0.00' }}</p>
             </div>
           </div>
         </div>
@@ -73,67 +63,74 @@
 </template>
 
 <script>
-import { apiService } from "../apiService"; // Importar el servicio centralizado
 import Navbar from "../components/Sidebar.vue";
 import LSidebar from "../components/LSidebar.vue";
+import { ref, computed } from "vue";
+import { apiService } from "../apiService";
+import { store } from "../store"; // Importar el estado compartido
 
 export default {
   components: {
     Navbar,
     LSidebar,
   },
-  data() {
-    return {
-      search: "",
-      categorias: ["Todos", "Carnes", "Pescados", "Quesos", "Embutidos", "Vinos", "Delicatessen"],
-      productos: [],
-      categoriaSeleccionada: "Todos",
-      paraLlevar: false,
-    };
-  },
-  computed: {
-    productosFiltrados() {
-      let productos = this.productos;
+  setup() {
+    const search = ref("");
+    const menus = ref([]);
+    const productos = ref([]);
 
-      if (this.categoriaSeleccionada !== "Todos") {
-        productos = productos.filter(
-          (producto) => producto.categoria === this.categoriaSeleccionada
-        );
-      }
+    // Computados
+    const productosFiltrados = computed(() => {
+      if (!search.value) return productos.value;
+      return productos.value.filter((producto) =>
+        producto.name?.toLowerCase().includes(search.value.toLowerCase())
+      );
+    });
 
-      if (this.search) {
-        productos = productos.filter((producto) =>
-          producto.nombre.toLowerCase().includes(this.search.toLowerCase())
-        );
-      }
-
-      return productos;
-    },
-  },
-  methods: {
-    async fetchProductos() {
+    // Métodos
+    const fetchMenus = async () => {
       try {
-        const data = await apiService.getAllFoods(); // Llamada al servicio para obtener los foods
-        this.productos = data.map((producto) => ({
-          nombre: producto.name,
-          descripcion: producto.description,
-          precio: producto.price,
-          disponible: producto.disponible || 0, // Asegúrate de que el backend envíe esta propiedad
-          categoria: producto.menu || "Sin Categoría",
-        }));
+        const data = await apiService.getAllMenus();
+        menus.value = Array.isArray(data) ? data : [];
       } catch (error) {
-        console.error("Error al obtener los productos:", error);
+        console.error("Error al obtener los menús:", error);
       }
-    },
-    filtrarPorCategoria(categoria) {
-      this.categoriaSeleccionada = categoria;
-    },
-    toggleParaLlevar() {
-      this.paraLlevar = !this.paraLlevar;
-    },
-  },
-  async mounted() {
-    await this.fetchProductos();
+    };
+
+    const loadMenuProducts = async (menuId) => {
+      if (!menuId) {
+        console.error("El ID del menú no es válido.");
+        return;
+      }
+      try {
+        const menu = await apiService.getMenuById(menuId);
+        productos.value = Array.isArray(menu.foods) ? menu.foods : [];
+      } catch (error) {
+        console.error(`Error al cargar productos del menú con ID ${menuId}:`, error);
+      }
+    };
+
+    const agregarAOrden = (producto) => {
+  if (!store.platillosSeleccionados) {
+    console.error("Error: 'platillosSeleccionados' no está definido en el store.");
+    return;
+  }
+
+  store.platillosSeleccionados.push({ ...producto, quantity: 1 });
+};
+
+
+    // Montaje
+    fetchMenus();
+
+    return {
+      search,
+      menus,
+      productos,
+      productosFiltrados,
+      loadMenuProducts,
+      agregarAOrden,
+    };
   },
 };
 </script>
