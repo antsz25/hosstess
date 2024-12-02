@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import { apiService } from "../apiService"; // Importar el servicio centralizado
 import Navbar from "../components/Sidebar.vue";
 import LSidebar from "../components/LSidebar.vue";
 
@@ -89,7 +89,6 @@ export default {
       productos: [],
       categoriaSeleccionada: "Todos",
       paraLlevar: false,
-      apiUrl: "http://localhost:3001/", // Cambia esto según tu entorno
     };
   },
   computed: {
@@ -114,8 +113,8 @@ export default {
   methods: {
     async fetchProductos() {
       try {
-        const response = await axios.get(`${this.apiUrl}foods`);
-        this.productos = response.data.map((producto) => ({
+        const data = await apiService.getAllFoods(); // Llamada al servicio para obtener los foods
+        this.productos = data.map((producto) => ({
           nombre: producto.name,
           descripcion: producto.description,
           precio: producto.price,
@@ -138,4 +137,3 @@ export default {
   },
 };
 </script>
-
