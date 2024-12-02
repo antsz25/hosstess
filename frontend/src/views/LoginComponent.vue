@@ -9,16 +9,16 @@
             <h2 class="text-3xl font-semibold text-center text-red-600 py-6">Ingresar</h2>
             <form @submit.prevent="login" class="px-8 py-6">
                 <div class="mb-4">
-                    <label for="username" class="block text-sm font-medium text-gray-700">Usuario o correo electr&oacute;nico</label>
+                    <label for="username" class="block text-sm font-medium text-gray-700">Usuario o correo electrónico</label>
                     <input type="text" id="username" v-model="username" class="input-field"
-                        placeholder="Ingresa tu usuario o correo electr&oacute;nico" required />
+                        placeholder="Ingresa tu usuario o correo electrónico" />
                 </div>
                 <div class="mb-4">
                     <label for="password" class="block text-sm font-medium text-gray-700">Contraseña</label>
                     <input type="password" id="password" v-model="password" class="input-field"
-                        placeholder="Ingresa tu contraseña" required />
+                        placeholder="Ingresa tu contraseña" />
                 </div>
-                <button type="submit" @onClick="Ingresar"
+                <button type="submit"
                     class="w-full py-2 px-4 rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400">
                     Ingresar
                 </button>
@@ -32,34 +32,30 @@
     </div>
 </template>
 
+
 <script>
-import Axios from '../main.ts';
 export default {
     data() {
         return {
             username: '',
             password: '',
-            error: false
+            error: false,
         };
     },
     methods: {
-        async login() {
-            try{
-                const request = await Axios.post('usuarios/login',{
-                    data: this.username,
-                    password: this.password
-                });      
-                if(request.status !== 200){throw new Error ()}
-                localStorage.setItem("token","Bearer: "+request.data.token);
+        login() {
+            // En desarrollo, redirige directamente sin autenticación
+            if (import.meta.env.DEV) {
                 this.$router.push('/main');
-            }catch(err){
-                console.error('Error logging in:', err.message);
+            } else {
+                // Muestra un error simulado en modo producción
                 this.error = true;
             }
-        }
-    }
+        },
+    },
 };
 </script>
+
 
 <style scoped>
 .input-field {

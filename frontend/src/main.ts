@@ -4,45 +4,40 @@ import App from "./App.vue";
 import { createVuetify } from "vuetify";
 import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";
-import axios, {AxiosInstance} from 'axios';
+import axios, { AxiosInstance } from "axios";
 import "./index.css";
 
+// Axios Configuration
+let publicUrl: string;
 
-//Axios configuration
-let publicUrl: string = "";
-if (import.meta.env.DEV) {publicUrl = "http://localhost:3001/";}
-if (import.meta.env.PROD) {publicUrl = import.meta.env.VITE_PUBLIC_URL;}
-const token: string | null = localStorage.getItem("token");
+// Configuración estática según ubicación
+if (window.location.hostname === "localhost") {
+  publicUrl = "http://localhost:3001/";
+} else {
+  publicUrl = "https://produccion-api.com/"; // Cambia a la URL de tu backend en producción
+}
+
+// Crea la instancia de Axios
 const Axios: AxiosInstance = axios.create({
   baseURL: publicUrl,
   headers: {
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Credentials": "true",
-    "Authorization": token ? `${token}` : null,
+    // No se requiere el token en este caso, ya que lo eliminamos para facilitar el desarrollo
   },
-  withCredentials: true,
+  withCredentials: false, // Cambia a `true` si necesitas cookies en producción
 });
 
-export async function CheckSession(){
-  if(await localStorage.getItem("token")){
-    return true;
-  }else{
-    return false;
-  }
-}
 export default Axios;
 
-// Importa tus componentes de Vue Router aquí
-// Por ejemplo:
+// Define las rutas
 import main from "./views/MainComponent.vue";
 import Login from "./views/LoginComponent.vue";
 import Register from "./views/RegisterComponent.vue";
-import meseros from "./views/meserosComponent.vue";
+import meseros from "./views/MenuComponent.vue";
 import waitlist from "./views/WaitListComponent.vue";
-// import About from './components/About.vue';
 
-// Define el tipo para las rutas
 const routes: RouteRecordRaw[] = [
   {
     path: '/main',
@@ -69,7 +64,6 @@ const routes: RouteRecordRaw[] = [
     name: 'waitlist',
     component: waitlist,
   },
-  
 ];
 
 // Crea el enrutador
@@ -87,11 +81,7 @@ const vuetify = createVuetify({
 // Crea tu aplicación Vue
 const app = createApp(App);
 
-// Usa Vue Router en tu aplicación
 app.use(router);
-
-// Usa Vuetify en tu aplicación
 app.use(vuetify);
 
-// Monta tu aplicación en el elemento con el ID 'app'
 app.mount("#app");
