@@ -129,7 +129,8 @@ export const apiService = {
       });
   },
 
-  createOrder(orderDTO: {mesa:string, description:string, creationDate:string, ready:boolean, complete:boolean, foods: [any]}) {
+  createOrder(orderDTO: {mesa:string, description:string, creationDate:string, ready:boolean, complete:boolean, foods: [any],modality:number}) {
+    console.log(orderDTO);
     return axios.post("/orders", orderDTO)
       .then(response => response.data)
       .catch(error => {

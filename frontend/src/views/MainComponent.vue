@@ -129,7 +129,7 @@
 <script setup>
 import Navbar from '../components/Sidebar.vue';
 import { ref, onMounted } from 'vue';
-import Axios from '../main.ts';
+import { apiService } from '../apiService.ts';
 
 const mesas = ref([]);
 const modalActivo = ref(false);
@@ -140,19 +140,12 @@ const mesaSeleccionada = ref(null);
 
 async function refillMesas() {
   try {
-    const response = await Axios.get('/mesas/');
-    response.data.sort((a, b) => a.nombre.localeCompare(b.nombre));
-    return response.data || [];
+    const response = await apiService.getTables();
+    // response.data.sort((a, b) => a.nombre.localeCompare(b.nombre));
+    mesas.value = response;
   } catch (error) {
     console.error('Error al obtener mesas:', error);
     // Retorna datos ficticios en caso de error en modo desarrollo
-    if (import.meta.env.DEV) {
-      console.warn('Usando datos ficticios en modo desarrollo.');
-      return [
-        { id: 1, nombre: 'Mesa 1', capacidad: 4, disponible: true, mesero: null, personaTitular: null },
-        { id: 2, nombre: 'Mesa 2', capacidad: 6, disponible: false, mesero: null, personaTitular: 'Juan Pérez' },
-      ];
-    }
     return [];
   }
 }
@@ -164,13 +157,9 @@ async function agregarNuevaMesa() {
       capacidad: capacidadNuevaMesa.value,
       disponible: true,
     };
-    if (import.meta.env.DEV) {
-      // Simula la adición en modo desarrollo
-      mesas.value.push({ id: mesas.value.length + 1, ...nuevaMesa });
-    } else {
-      await Axios.post('/mesas/add', nuevaMesa);
-      mesas.value = await refillMesas();
-    }
+      
+    const response = await apiService.createTable(nuevaMesa);
+    mesas.value = [...mesas.value, response];
     cerrarModalAgregarMesa();
   } catch (error) {
     console.error('Error al agregar mesa:', error);
@@ -181,13 +170,8 @@ async function agregarNuevaMesa() {
 async function eliminarMesa(mesa) {
   try {
     if (confirm(`¿Estás seguro de eliminar la mesa ${mesa.nombre}?`)) {
-      if (import.meta.env.DEV) {
-        // Simula la eliminación en modo desarrollo
-        mesas.value = mesas.value.filter((m) => m.id !== mesa.id);
-      } else {
-        await Axios.delete(`/mesas/delete/${mesa.id}`);
-        mesas.value = await refillMesas();
-      }
+      apiService.deleteTable(mesa.id);
+      mesas.value = mesas.value.filter((m) => m.id !== mesa.id);
     }
   } catch (error) {
     console.error('Error al eliminar mesa:', error);
@@ -215,11 +199,9 @@ function cerrarMesa() {
 
 async function ocuparMesa() {
   try {
-    if (mesaSeleccionada.value) {
-      mesaSeleccionada.value.disponible = false;
-      mesas.value = [...mesas.value]; // Actualizar la lista local
-      cerrarMesa();
-    }
+    await apiService.editTable(mesaSeleccionada.value.id, mesaSeleccionada.value);
+    mesaSeleccionada.value.disponible = false;
+    cerrarMesa();
   } catch (error) {
     console.error('Error al ocupar mesa:', error);
   }
@@ -227,17 +209,15 @@ async function ocuparMesa() {
 
 async function desocuparMesa() {
   try {
-    if (mesaSeleccionada.value) {
-      mesaSeleccionada.value.disponible = true;
-      mesas.value = [...mesas.value]; // Actualizar la lista local
-      cerrarMesa();
-    }
+    await apiService.editTable(mesaSeleccionada.value.id, mesaSeleccionada.value);
+    mesaSeleccionada.value.disponible = true;
+    cerrarMesa();
   } catch (error) {
     console.error('Error al desocupar mesa:', error);
   }
 }
 
 onMounted(async () => {
-  mesas.value = await refillMesas();
+  await refillMesas();
 });
 </script>
